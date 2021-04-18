@@ -9,7 +9,7 @@ workspace "Breakout"
 
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 	IncludeDir = {}
-	IncludeDir["SDL2"] = "Breakout/vendor/SDL2/include"
+	IncludeDir["SDL2"] = "Breakout/vendor/SDL2"
 
 project "Breakout"
 	location "Breakout"
@@ -31,12 +31,12 @@ project "Breakout"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/tinyxml2",
-		"%{IncludeDir.SDL2}"
+		"%{IncludeDir.SDL2}/include"
 	}
 
 	libdirs
 	{
-		"%{IncludeDir.SDL2}/../lib/x64"
+		"%{IncludeDir.SDL2}/lib/x64"
 	}
 
 	links
