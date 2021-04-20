@@ -1,10 +1,28 @@
 #include "Brick.h"
 
-Brick::Brick(int x, int y, int width, int height, int level, SDL_Color color)
-	: Entity(x, y), m_Level(level), m_Color(color)
+#include <string>
+
+Brick::Brick(int x, int y, int width, int height, int level, const std::string& texPath)
+	: RigidBody(x, y, RB_Type::Rectangle), m_Level(level)
 {
 	m_Rectangle.w = width;
 	m_Rectangle.h = height;
+	m_Rectangle.x = x;
+	m_Rectangle.y = y;
+
+	m_Texture = NULL;
+
+	SDL_Surface* surface = SDL_LoadBMP(texPath.c_str());
+
+	if (surface == NULL)
+		SDL_Log("Failed to load image!");
+	else {
+		m_Texture = SDL_CreateTextureFromSurface(gm->getRenderer(), surface);
+		if (m_Texture == NULL)
+			SDL_Log("Failed to create texture from surface!");
+	}
+
+	SDL_FreeSurface(surface);
 }
 
 Brick::~Brick()
@@ -13,10 +31,6 @@ Brick::~Brick()
 
 void Brick::init()
 {
-	m_Color.r = 0;
-	m_Color.g = 255;
-	m_Color.b = 255;
-	m_Color.a = 255;
 }
 
 void Brick::handleEvents()
@@ -31,6 +45,10 @@ void Brick::update()
 
 void Brick::render()
 {
-	SDL_SetRenderDrawColor(gm->getRenderer(), RGBA(m_Color));
-	SDL_RenderFillRect(gm->getRenderer(), &m_Rectangle);
+	SDL_RenderCopy(gm->getRenderer(), m_Texture, NULL, &m_Rectangle);
+}
+
+void Brick::onCollision(RigidBody* other) 
+{
+	
 }

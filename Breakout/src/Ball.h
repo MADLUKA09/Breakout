@@ -3,13 +3,16 @@
 #include "Engine/RigidBody.h"
 #include <string>
 
-#include "SDL.h"
+struct Circle {
+	int x, y; // Center of the circle
+	int radius;
+};
 
-class Brick : public RigidBody {
+class Ball : public RigidBody
+{
 public:
-	Brick(int x, int y, int width, int height, int level, const std::string& texPath);
-	~Brick();
-
+	Ball(int x, int y, int radius, std::string texPath);
+	~Ball();
 
 protected:
 	// From Entity
@@ -22,9 +25,8 @@ protected:
 	virtual void onCollision(RigidBody* other);
 
 private:
-	int			m_Level;
-
-	SDL_Rect	m_Rectangle;
-
-	SDL_Texture* m_Texture;
+	Circle			m_Circle;
+	SDL_Texture*	m_Texture;
+	SDL_Rect		m_Rectangle; // Needed for applying texture
 };
+

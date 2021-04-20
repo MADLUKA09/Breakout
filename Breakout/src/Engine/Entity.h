@@ -23,6 +23,7 @@ public:
 
 protected:
 	virtual void init() {}
+	virtual void handleEvents() {}
 	virtual void update() {}
 	virtual void render() {}
 

@@ -11,7 +11,7 @@ void GameManager::init(const char* title, const int xPos, const int yPos, const 
 		
 		m_Renderer = SDL_CreateRenderer(m_Window, -1, 0);
 		if (m_Renderer) {
-			SDL_SetRenderDrawColor(m_Renderer, 192, 255, 0, 255); //I like lime color
+			SDL_SetRenderDrawColor(m_Renderer, 127, 127, 127, 255);
 			SDL_Log("Renderer created...");
 		}
 
@@ -42,12 +42,14 @@ void GameManager::update() {
 }
 
 void GameManager::render() {
-	SDL_SetRenderDrawColor(m_Renderer, 192, 255, 0, 255);
+	SDL_SetRenderDrawColor(m_Renderer, 127, 127, 127, 255);
 	SDL_RenderClear(m_Renderer);
+
+	//Add stuff to render
 	for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
 		(*it)->entityRender();
 	}
-	//Add stuff to render
+	
 	SDL_RenderPresent(m_Renderer);
 }
 
