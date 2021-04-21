@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/RigidBody.h"
+#include "Engine/Body.h"
 #include <string>
 
 struct Circle {
@@ -8,10 +8,10 @@ struct Circle {
 	int radius;
 };
 
-class Ball : public RigidBody
+class Ball : public Body
 {
 public:
-	Ball(int x, int y, int radius, std::string texPath);
+	Ball(Shapes::Shape* shape, int x, int y);
 	~Ball();
 
 protected:
@@ -19,14 +19,6 @@ protected:
 	virtual void init();
 	virtual void handleEvents();
 	virtual void update();
-	virtual void render();
 
-	// From RigidBody
-	virtual void onCollision(RigidBody* other);
-
-private:
-	Circle			m_Circle;
-	SDL_Texture*	m_Texture;
-	SDL_Rect		m_Rectangle; // Needed for applying texture
 };
 
