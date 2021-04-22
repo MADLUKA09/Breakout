@@ -3,7 +3,6 @@
 PlayerPad::PlayerPad(Shapes::Shape* shape, int x, int y)
 	: Body(shape, x, y, true)
 {
-
 }
 
 PlayerPad::~PlayerPad() {}
@@ -12,24 +11,39 @@ void PlayerPad::init()
 {
 }
 
-void PlayerPad::handleEvents() 
+void PlayerPad::onKeyboardDown(const SDL_Keycode& KC)
 {
-	setVelocityX(0);
-	bool leftPressed = gm->getControls()->isPressed(CONT_LEFT);
-	bool rightPressed = gm->getControls()->isPressed(CONT_RIGHT);
-	if (leftPressed && rightPressed)
-		return;
-
-	if (rightPressed) {
-		setVelocityX(3);
+	static float maxAcceleration = 3.f;
+	switch (KC) {
+	case SDLK_LEFT:
+		setAcceleration(- 5.f, 0.f);
+		break;
+	case SDLK_RIGHT:
+		setAcceleration(5.f, 0.f);
+		break;
 	}
+}
 
-	if (leftPressed) {
-		setVelocityX(-3);
+void PlayerPad::onKeyboardUp(const SDL_Keycode& KC)
+{
+	switch (KC) {
+	case SDLK_LEFT:
+		setAcceleration(0.f, 0.f);
+		break;
+	case SDLK_RIGHT:
+		setAcceleration(0.f, 0.f);
+		break;
 	}
 }
 
 void PlayerPad::update()
 {
-	setPosition(getPosition().x + getVelocity().x, getPosition().y);
+	if (getPosition().x < 1.f) {
+		setPosition(1.1f, getPosition().y);
+		setVelocity(0.f, 0.f);
+	}
+	else if (getPosition().x > WINDOWWIDTH - getShapeWidth()) {
+		setPosition(float(WINDOWWIDTH - getShapeWidth()), getPosition().y);
+		setVelocity(0.f, 0.f);
+	}
 }

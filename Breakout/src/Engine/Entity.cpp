@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include <math.h>
 
 GameManager* Entity::gm = GameManager::Get();
 
@@ -20,23 +21,24 @@ Entity::Entity(int x, int y)
 
 void Entity::entityInit() {}
 
-void Entity::entityHandleEvents() {
-	this->handleEvents();
+void Entity::entityOnKeyboardDown(const SDL_Keycode& KC)
+{
+	this->onKeyboardDown(KC);
+}
+
+void Entity::entityOnKeyboardUp(const SDL_Keycode& KC)
+{
+	this->onKeyboardUp(KC);
 }
 
 void Entity::entityUpdate() 
 {
-	moveByVelocity();
+	this->bodyMove();
 	this->update();
 	this->bodyUpdate();
-
 }
 
 void Entity::entityRender()
 {
 	this->render();
-}
-
-void Entity::moveByVelocity() {
-	setPosition(getPosition().x + getVelocity().x, getPosition().y + getVelocity().y);
 }

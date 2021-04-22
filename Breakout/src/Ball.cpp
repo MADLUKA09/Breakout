@@ -13,7 +13,10 @@ void Ball::init()
 {
 }
 
-void Ball::handleEvents()
+void Ball::onKeyboardDown(const SDL_Keycode& KC)
+{
+}
+void Ball::onKeyboardUp(const SDL_Keycode& KC)
 {
 }
 

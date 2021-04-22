@@ -7,44 +7,48 @@
 #include "GameManager.h"
 #include "SimpleVector2.h"
 
+#define FRAMESCALE float(gm->getFrameTime()) / 100
+#define WINDOWWIDTH gm->getWindowWidth()
+#define WINDOWHEIGHT gm->getWindowHeight()
+
 class Entity {
 public:
 	Entity();
 	Entity(int x, int y);
 
 	void entityInit();
-	void entityHandleEvents();
+	void entityOnKeyboardDown(const SDL_Keycode& KC);
+	void entityOnKeyboardUp(const SDL_Keycode& KC);
 	void entityUpdate();
 	void entityRender();
 
-	SDL_Point getPosition()				{ return m_Position; }
-	SimpleVector2<int> getVelocity()	{ return m_Velocity; }
+	bool isActive() { return m_Active; }
+	void setActive(bool b) { m_Active = b; }
 
+	SimpleVector2<float> getPosition()		{ return m_Position; }
 
-	void setPosition(int x, int y) { m_Position.x = x; m_Position.y = y; }
-	void setVelocity(SimpleVector2<int> vector) { m_Velocity = vector; }
-	void setVelocityX(int _x) { m_Velocity.x = _x; }
-	void setVelocityY(int _y) { m_Velocity.y = _y; }
-
+	void setPosition(float x, float y)			{ m_Position.x = x; m_Position.y = y; }
+	
 	static void setGameManager(GameManager* _gm) { gm = _gm; }
 	static GameManager* getGameManager() { return gm; }
 
 
 protected:
+	virtual void bodyMove() {}
 	virtual void bodyUpdate() {}
 
-	virtual void init() {}
-	virtual void handleEvents() {}
-	virtual void update() {}
-	virtual void render() {}
+	virtual void init()				{}
+	virtual void onKeyboardDown(const SDL_Keycode& keyCode)	{}
+	virtual void onKeyboardUp(const SDL_Keycode& keyCode)	{}
+	virtual void update()			{}
+	virtual void render()			{}
 
 	//Every entity has a pointer to the game manager object
 	static GameManager* gm;
 
 private:
 	bool m_Active;
-	SDL_Point m_Position;
-	SimpleVector2<int> m_Velocity;
+	SimpleVector2<float> m_Position;
 
 	void moveByVelocity();
 

@@ -30,7 +30,7 @@ public:
 	}
 
 	SimpleVector2 normalized() {
-		return this / this->length();
+		return *this / this->length();
 	}
 
 	SimpleVector2 projectTo(const SimpleVector2& other) {

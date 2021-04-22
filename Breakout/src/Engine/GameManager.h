@@ -7,22 +7,8 @@
 #include <bitset>
 #include "TextureManager.h"
 
-#define CONT_LEFT 0
-#define CONT_RIGHT 1
-#define CONT_SPACE 2
-
 class Entity;
 class Body;
-
-struct controls {
-public:
-	bool isPressed(int i) { return controlsPressed[i]; }
-	void setPressed(int i) { controlsPressed[i] = 1; }
-	void setReleased(int i) { controlsPressed[i] = 0; }
-
-private:
-	std::bitset<3> controlsPressed;
-};
 
 //GameManager singleton, contains everything in the game
 class GameManager
@@ -47,7 +33,6 @@ public:
 	void addStatic(std::shared_ptr<Body> body);
 
 	SDL_Renderer* getRenderer() { return m_Renderer; }
-	controls* getControls() { return &m_Controls; }
 
 	// Textures
 	SDL_Texture*	getTexture(const std::string& name) { return m_textureManager->getTexture(name); }
@@ -57,6 +42,10 @@ public:
 	void	startFrame();
 	void	setFrameTime();
 	int		getFrameTime() { return m_FrameTime; }
+
+	// Window
+	constexpr int getWindowWidth() { return m_WindowWidth; }
+	constexpr int getWindowHeight() { return m_WindowHeight; }
 
 private:
 	GameManager() {}
@@ -72,13 +61,16 @@ private:
 	std::vector<std::shared_ptr<Body>> dynamicBodies;
 	std::vector<std::shared_ptr<Body>> staticBodies;
 
-	controls m_Controls;
 
 	// Frame timing members
 	Uint32	m_FrameStart;
 	int		m_FrameTime;
 	int		m_TargetFramerate;
 	int		m_TargetFrameTime;
+
+	// Window
+	int m_WindowWidth;
+	int m_WindowHeight;
 
 };
 

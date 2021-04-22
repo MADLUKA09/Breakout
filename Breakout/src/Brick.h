@@ -14,7 +14,8 @@ public:
 protected:
 	// From Entity
 	virtual void init();
-	virtual void handleEvents();
+	virtual void onKeyboardDown(const SDL_Keycode& KC);
+	virtual void onKeyboardUp(const SDL_Keycode& KC);
 	virtual void update();
 
 private:

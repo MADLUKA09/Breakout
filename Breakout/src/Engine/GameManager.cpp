@@ -25,6 +25,9 @@ void GameManager::init(const char* title, int xPos, int yPos, int width, int hei
 		m_TargetFramerate	= frameRate;
 		m_TargetFrameTime	= 1000 / frameRate;
 
+		m_WindowWidth = width;
+		m_WindowHeight = height;
+
 		m_textureManager	= new TextureManager(m_Renderer);
 		m_Running			= true;
 		SDL_Log("Initialization done!");
@@ -44,17 +47,16 @@ void GameManager::handleEvents() {
 			m_Running = false;
 			break;
 		case SDL_KEYDOWN:
-			std::cout << "key pressed: " << std::flush;
-			handleKeyDownEvent(this, event.key.keysym.scancode);
+			for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
+				(*it)->entityOnKeyboardDown(event.key.keysym.sym);
+			}
 			break;
 		case SDL_KEYUP:
-			handleKeyUpEvent(this, event.key.keysym.scancode);
+			for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
+				(*it)->entityOnKeyboardUp(event.key.keysym.sym);
+			}
 			break;
 		}
-	}
-
-	for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
-		(*it)->entityHandleEvents();
 	}
 }
 
@@ -106,34 +108,4 @@ void GameManager::setFrameTime() {
 		m_FrameTime = SDL_GetTicks() - m_FrameStart;
 	}
 	std::cout << "Frame time: " << m_FrameTime << "ms" << std::endl;
-}
-
-void handleKeyDownEvent(GameManager* gm, SDL_Scancode keyCode) {
-	switch (keyCode) {
-	case SDL_SCANCODE_LEFT:
-		std::cout << "LEFT" << std::endl;
-		gm->getControls()->setPressed(CONT_LEFT);
-		break;
-	case SDL_SCANCODE_RIGHT:
-		std::cout << "RIGHT" << std::endl;
-		gm->getControls()->setPressed(CONT_RIGHT);
-		break;
-	case SDL_SCANCODE_SPACE:
-		gm->getControls()->setPressed(CONT_SPACE);
-		break;
-	}
-}
-
-void handleKeyUpEvent(GameManager* gm, SDL_Scancode keyCode) {
-	switch (keyCode) {
-	case SDL_SCANCODE_LEFT:
-		gm->getControls()->setReleased(CONT_LEFT);
-		break;
-	case SDL_SCANCODE_RIGHT:
-		gm->getControls()->setReleased(CONT_RIGHT);
-		break;
-	case SDL_SCANCODE_SPACE:
-		gm->getControls()->setReleased(CONT_SPACE);
-		break;
-	}
 }

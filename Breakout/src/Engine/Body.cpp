@@ -16,10 +16,39 @@ Body::~Body()
 {
 }
 
+void Body::bodyMove() {
+	if (!isActive())
+		return;
+	float FS = FRAMESCALE;
+	auto v = getVelocity();
+	auto a = getAcceleration();
+
+	// Friction
+	setVelocity(v.x - v.x * m_Friction * FS, v.y - v.y * m_Friction * FS);
+	v = getVelocity();
+
+	// Distance moved in this frame
+	SimpleVector2<float> path = v * FS + a * FS * FS;
+
+	setPosition(getPosition().x + path.x, getPosition().y + path.y);
+
+	// Recalculate velocity
+	setVelocity(v.x + a.x * FS, v.y + a.y * FS);
+	v = getVelocity();
+
+	if (v.length() > m_MaxSpeed) {
+		auto newVel = v.normalized() * m_MaxSpeed;
+		setVelocity(newVel.x, newVel.y);
+	}
+
+	else if (v.length() < 0.5f)
+		setVelocity(0.f, 0.f);
+}
+
 void Body::bodyUpdate() {
 	if (m_Dynamic) {
-		this->m_DestRect.x = this->getPosition().x;
-		this->m_DestRect.y = this->getPosition().y;
+		this->m_DestRect.x = int(this->getPosition().x);
+		this->m_DestRect.y = int(this->getPosition().y);
 	}
 }
 

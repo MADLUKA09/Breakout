@@ -16,7 +16,10 @@ void Brick::init()
 {
 }
 
-void Brick::handleEvents()
+void Brick::onKeyboardDown(const SDL_Keycode& KC)
+{
+}
+void Brick::onKeyboardUp(const SDL_Keycode& KC)
 {
 }
 
