@@ -1,6 +1,7 @@
 #include "Body.h"
+#include "Movement.h"
 
-Body::Body(Shapes::Shape* shape, int x, int y, bool dynamic)
+Body::Body(Shapes::Shape* shape, float x, float y, bool dynamic)
 	: m_Shape(shape), Entity(x, y), m_Dynamic(dynamic)
 {
 	if (dynamic)
@@ -9,7 +10,7 @@ Body::Body(Shapes::Shape* shape, int x, int y, bool dynamic)
 		this->getGameManager()->addStatic(std::shared_ptr<Body>(this));
 
 	m_Texture = NULL;
-	m_DestRect = { x, y, shape->shapeWidth(), shape->shapeHeight() };
+	m_DestRect = { int(x), int(y), shape->shapeWidth(), shape->shapeHeight() };
 }
 
 Body::~Body()
@@ -19,18 +20,17 @@ Body::~Body()
 void Body::bodyMove() {
 	if (!isActive())
 		return;
-	float FS = FRAMESCALE;
+	float FS = FRAMETIME/100;
 	auto v = getVelocity();
 	auto a = getAcceleration();
+
+	// New position after this frame
+	SimpleVector2<float> newPos = Movement::newPositionFromVelocityAcceleration(getPosition(), v, a, FS);
+	setPosition(newPos.x, newPos.y);
 
 	// Friction
 	setVelocity(v.x - v.x * m_Friction * FS, v.y - v.y * m_Friction * FS);
 	v = getVelocity();
-
-	// Distance moved in this frame
-	SimpleVector2<float> path = v * FS + a * FS * FS;
-
-	setPosition(getPosition().x + path.x, getPosition().y + path.y);
 
 	// Recalculate velocity
 	setVelocity(v.x + a.x * FS, v.y + a.y * FS);

@@ -2,7 +2,7 @@
 
 #include <string>
 
-Brick::Brick(Shapes::Shape* shape, int x, int y, int level)
+Brick::Brick(Shapes::Shape* shape, float x, float y, int level)
 	: Body(shape, x, y, false), m_Level(level)
 {
 	

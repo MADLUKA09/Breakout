@@ -3,9 +3,6 @@
 
 #include "Entity.h"
 
-void handleKeyDownEvent(GameManager* gm, SDL_Scancode keyCode);
-void handleKeyUpEvent(GameManager* gm, SDL_Scancode keyCode);
-
 void GameManager::init(const char* title, int xPos, int yPos, int width, int height, int frameRate) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 		SDL_Log("SDL initialized...");
@@ -29,6 +26,7 @@ void GameManager::init(const char* title, int xPos, int yPos, int width, int hei
 		m_WindowHeight = height;
 
 		m_textureManager	= new TextureManager(m_Renderer);
+		m_CollisionManager	= new CollisionManager();
 		m_Running			= true;
 		SDL_Log("Initialization done!");
 	}
@@ -61,6 +59,8 @@ void GameManager::handleEvents() {
 }
 
 void GameManager::update() {
+
+	m_CollisionManager->detectCollisions(m_StaticBodies, m_DynamicBodies, float(getFrameTime()));
 	for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
 		(*it)->entityUpdate();
 	}
@@ -90,11 +90,11 @@ void GameManager::addSceneObject(std::shared_ptr<Entity> newSceneObject) {
 }
 
 void GameManager::addDynamic(std::shared_ptr<Body> body) {
-	dynamicBodies.push_back(body);
+	m_DynamicBodies.push_back(body);
 }
 
 void GameManager::addStatic(std::shared_ptr<Body> body) {
-	staticBodies.push_back(body);
+	m_StaticBodies.push_back(body);
 }
 
 void GameManager::startFrame() {

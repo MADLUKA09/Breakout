@@ -6,6 +6,7 @@
 #include <memory>
 #include <bitset>
 #include "TextureManager.h"
+#include "CollisionManager.h"
 
 class Entity;
 class Body;
@@ -56,10 +57,11 @@ private:
 	SDL_Renderer*	m_Renderer;
 
 	TextureManager* m_textureManager;
+	CollisionManager* m_CollisionManager;
 
 	std::vector<std::shared_ptr<Entity>> m_SceneObjects;
-	std::vector<std::shared_ptr<Body>> dynamicBodies;
-	std::vector<std::shared_ptr<Body>> staticBodies;
+	std::vector<std::shared_ptr<Body>> m_DynamicBodies;
+	std::vector<std::shared_ptr<Body>> m_StaticBodies;
 
 
 	// Frame timing members

@@ -11,7 +11,7 @@ Entity::Entity()
 	m_Active = true;
 }
 
-Entity::Entity(int x, int y)
+Entity::Entity(float x, float y)
 {
 	m_Position.x = x;
 	m_Position.y = y;

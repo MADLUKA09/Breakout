@@ -7,7 +7,7 @@
 
 class Brick : public Body {
 public:
-	Brick(Shapes::Shape* shape, int x, int y, int level);
+	Brick(Shapes::Shape* shape, float x, float y, int level);
 	~Brick();
 
 

@@ -11,29 +11,37 @@ public:
 	T x;
 	T y;
 
-	T length() { return sqrt(x * x  + y * y); }
+	T length() const { return sqrt(x * x  + y * y); }
 	
-	SimpleVector2 operator+(const SimpleVector2& other) {
+	SimpleVector2 operator+(const SimpleVector2& other) const{
 		return SimpleVector2(this->x + other.x, this->y + other.y);
 	}
 
-	SimpleVector2 operator*(const T factor) {
+	SimpleVector2 operator-(const SimpleVector2& other) const {
+		return SimpleVector2(this->x- other.x, this->y - other.y);
+	}
+
+	SimpleVector2 operator-() const {
+		return SimpleVector2(-this->x, -this->y);
+	}
+
+	SimpleVector2 operator*(const T& factor) const {
 		return SimpleVector2(this->x * factor, this->y * factor);
 	}
 
-	SimpleVector2 operator/(const T factor) {
+	SimpleVector2 operator/(const T& factor) const {
 		return SimpleVector2(this->x / factor, this->y / factor);
 	}
 
-	T dotProduct(const SimpleVector2& other) {
+	T dotProduct(const SimpleVector2& other) const {
 		return this->x * other.x + this->y * other.y;
 	}
 
-	SimpleVector2 normalized() {
+	SimpleVector2 normalized() const {
 		return *this / this->length();
 	}
 
 	SimpleVector2 projectTo(const SimpleVector2& other) {
-		return normalized(other) * this->dotProduct(other);
+		return other.normalized() * this->dotProduct(other.normalized());
 	}
 };

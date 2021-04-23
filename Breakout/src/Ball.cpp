@@ -1,8 +1,9 @@
 #include "Ball.h"
 
-Ball::Ball(Shapes::Shape* shape, int x, int y)
+Ball::Ball(Shapes::Shape* shape, float x, float y)
 	: Body(shape, x, y, true)
 {
+	setFriction(0.f);
 }
 
 Ball::~Ball()
@@ -23,4 +24,8 @@ void Ball::onKeyboardUp(const SDL_Keycode& KC)
 void Ball::update()
 {
 
+}
+
+void Ball::releaseWithSpeed(SimpleVector2<float> speed) {
+	this->setVelocity(speed.x, speed.y);
 }

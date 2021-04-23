@@ -7,7 +7,7 @@
 class Body : public Entity
 {
 public:
-	Body(Shapes::Shape*, int x, int y, bool dynamic);
+	Body(Shapes::Shape*, float x, float y, bool dynamic);
 	~Body();
 
 	bool isDynamic() { return m_Dynamic; }

@@ -7,14 +7,14 @@
 #include "GameManager.h"
 #include "SimpleVector2.h"
 
-#define FRAMESCALE float(gm->getFrameTime()) / 100
+#define FRAMETIME float(gm->getFrameTime())
 #define WINDOWWIDTH gm->getWindowWidth()
 #define WINDOWHEIGHT gm->getWindowHeight()
 
 class Entity {
 public:
 	Entity();
-	Entity(int x, int y);
+	Entity(float x, float y);
 
 	void entityInit();
 	void entityOnKeyboardDown(const SDL_Keycode& KC);
@@ -49,7 +49,5 @@ protected:
 private:
 	bool m_Active;
 	SimpleVector2<float> m_Position;
-
-	void moveByVelocity();
 
 };

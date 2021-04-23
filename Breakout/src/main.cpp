@@ -23,20 +23,20 @@ int main(int argc, char* argv[]) {
 	Shapes::Circle* ballShape = new Shapes::Circle(8);
 	Shapes::Rectangle* playerShape = new Shapes::Rectangle(96, 16);
 
-	std::shared_ptr<Brick> brick = std::make_shared<Brick>(brickShape, 50, 50, 0);
+	std::shared_ptr<Brick> brick = std::make_shared<Brick>(brickShape, 50.f, 50.f, 0);
 	brick->applyTexture("BrickCyan");
 	gm->addSceneObject(brick);
 	
 
-	std::shared_ptr<Brick> brick2 = std::make_shared<Brick>(brickShape, 150, 50, 0);
+	std::shared_ptr<Brick> brick2 = std::make_shared<Brick>(brickShape, 150.f, 50.f, 0);
 	gm->addSceneObject(brick2);
 	brick2->applyTexture("BrickCyan");
 
-	std::shared_ptr<Ball> ball = std::make_shared<Ball>(ballShape, 392, 392);
+	std::shared_ptr<Ball> ball = std::make_shared<Ball>(ballShape, 392.f, 392.f);
 	gm->addSceneObject(ball);
 	ball->applyTexture("BallLime");
 
-	std::shared_ptr<PlayerPad> player = std::make_shared<PlayerPad>(playerShape, 368, 568);
+	std::shared_ptr<PlayerPad> player = std::make_shared<PlayerPad>(playerShape, 48.f, 568.f, ball);
 	player->applyTexture("PlayerTex");
 	gm->addSceneObject(player);
 

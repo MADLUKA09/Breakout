@@ -4,10 +4,12 @@
 #include "Engine/Body.h"
 #include "Engine/SimpleVector2.h"
 
+#include "Ball.h"
+
 class PlayerPad : public Body
 {
 public:
-	PlayerPad(Shapes::Shape* shape, int x, int y);
+	PlayerPad(Shapes::Shape* shape, float x, float y, std::shared_ptr<Ball> startingBall);
 	~PlayerPad();
 
 protected:
@@ -16,5 +18,9 @@ protected:
 	virtual void onKeyboardDown(const SDL_Keycode& keyCode);
 	virtual void onKeyboardUp(const SDL_Keycode& keyCode);
 	virtual void update();
+
+private:
+	std::shared_ptr<Ball> m_StartingBall;
+	bool m_Launched;
 };
 
