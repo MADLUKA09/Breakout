@@ -28,11 +28,27 @@ int main(int argc, char* argv[]) {
 	gm->addSceneObject(brick);
 	
 
-	std::shared_ptr<Brick> brick2 = std::make_shared<Brick>(brickShape, 150.f, 50.f, 0);
+	std::shared_ptr<Brick> brick2 = std::make_shared<Brick>(brickShape, 80.f, 114.f, 0);
 	gm->addSceneObject(brick2);
 	brick2->applyTexture("BrickCyan");
 
-	std::shared_ptr<Ball> ball = std::make_shared<Ball>(ballShape, 392.f, 392.f);
+	std::shared_ptr<Brick> brick3 = std::make_shared<Brick>(brickShape, 114.1f, 50.f, 0);
+	brick3->applyTexture("BrickCyan");
+	gm->addSceneObject(brick3);
+
+	std::shared_ptr<Brick> brick4 = std::make_shared<Brick>(brickShape, 144.1f, 114.f, 0);
+	brick4->applyTexture("BrickCyan");
+	gm->addSceneObject(brick4);
+
+	std::shared_ptr<Brick> brick5 = std::make_shared<Brick>(brickShape, 168.2f, 50.f, 0);
+	brick5->applyTexture("BrickCyan");
+	gm->addSceneObject(brick5);
+
+	std::shared_ptr<Brick> brick6 = std::make_shared<Brick>(brickShape, 208.2f, 114.f, 0);
+	brick6->applyTexture("BrickCyan");
+	gm->addSceneObject(brick6);
+
+	std::shared_ptr<Ball> ball = std::make_shared<Ball>(ballShape, 84.1f, 96.f);
 	gm->addSceneObject(ball);
 	ball->applyTexture("BallLime");
 

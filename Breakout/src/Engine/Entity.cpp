@@ -33,7 +33,6 @@ void Entity::entityOnKeyboardUp(const SDL_Keycode& KC)
 
 void Entity::entityUpdate() 
 {
-	this->bodyMove();
 	this->update();
 	this->bodyUpdate();
 }

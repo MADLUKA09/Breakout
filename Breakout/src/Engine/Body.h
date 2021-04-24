@@ -15,6 +15,7 @@ public:
 	// Shape
 	int getShapeWidth() { return m_Shape->shapeWidth(); }
 	int getShapeHeight() { return m_Shape->shapeHeight(); }
+	Shapes::Shape_type getShapeType() { return m_Shape->getType(); };
 
 	// Texturing
 	SDL_Texture* getTexture() { return m_Texture; }
@@ -24,17 +25,21 @@ public:
 	// Movement
 	void setVelocity(float x, float y) { m_Velocity.x = x; m_Velocity.y = y; }
 	void setAcceleration(float x, float y) { m_Acceleration.x = x; m_Acceleration.y = y; }
+	void setVelocity(SimpleVector2<float> vector) { m_Velocity = vector; }
+	void setAcceleration(SimpleVector2<float> vector) { m_Acceleration = vector;; }
 	SimpleVector2<float> getVelocity() { return m_Velocity; }
 	SimpleVector2<float> getAcceleration() { return m_Acceleration; }
 	void setFriction(float fr) { m_Friction = fr; }
 	void setMaxSpeed(float sp) { m_MaxSpeed = sp; }
+	float getCurrentTime() { return m_CurrentTime; }
 	
-	void bodyMove();
+	void bodyMove(float time);
 	void bodyUpdate();
 
 protected:
 	virtual void update() {}
 	virtual void render();
+	virtual void onCollision(Body* other) {}
 
 private:
 	Shapes::Shape*	m_Shape;
@@ -43,8 +48,10 @@ private:
 	// Movement
 	SimpleVector2<float> m_Velocity;
 	SimpleVector2<float> m_Acceleration;
-	float m_Friction = 0.1f;
-	float m_MaxSpeed = 100.f;
+	float m_Friction = 0.01f;
+	float m_MaxSpeed = 1.f;
+
+	float m_CurrentTime = 0.f;
 
 	// Texturing
 	SDL_Texture* m_Texture;

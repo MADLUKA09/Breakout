@@ -64,6 +64,8 @@ void GameManager::update() {
 	for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
 		(*it)->entityUpdate();
 	}
+
+
 }
 
 void GameManager::render() {

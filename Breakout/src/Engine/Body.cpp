@@ -17,16 +17,18 @@ Body::~Body()
 {
 }
 
-void Body::bodyMove() {
+void Body::bodyMove(float time) {
 	if (!isActive())
 		return;
-	float FS = FRAMETIME/100;
+	float FS = time;
 	auto v = getVelocity();
 	auto a = getAcceleration();
 
 	// New position after this frame
 	SimpleVector2<float> newPos = Movement::newPositionFromVelocityAcceleration(getPosition(), v, a, FS);
 	setPosition(newPos.x, newPos.y);
+
+	m_CurrentTime += time;
 
 	// Friction
 	setVelocity(v.x - v.x * m_Friction * FS, v.y - v.y * m_Friction * FS);
@@ -41,7 +43,7 @@ void Body::bodyMove() {
 		setVelocity(newVel.x, newVel.y);
 	}
 
-	else if (v.length() < 0.5f)
+	else if (v.length() < 0.005f)
 		setVelocity(0.f, 0.f);
 }
 
@@ -50,6 +52,7 @@ void Body::bodyUpdate() {
 		this->m_DestRect.x = int(this->getPosition().x);
 		this->m_DestRect.y = int(this->getPosition().y);
 	}
+	m_CurrentTime = 0.f;
 }
 
 void Body::render() {
