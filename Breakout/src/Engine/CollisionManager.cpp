@@ -3,6 +3,7 @@
 #include "Body.h"
 #include <algorithm>
 #include <iostream>
+#include <math.h>
 
 static bool compareCollisionsByPtr(Collision* col1, Collision* col2) { 
 if (*col1 > *col2) return true;
@@ -29,6 +30,46 @@ bool goingTowardsLine(const SimpleVector2<float>& linePointA, const SimpleVector
 	else return false;
 }
 
+Collision* detectBallPointCollision(const std::shared_ptr<Body>& ball, const SimpleVector2<float>& pointVel,
+									const SimpleVector2<float>& pointAcc, const SimpleVector2<float>& point, const float& frameTime) {
+
+	float remainingTime = frameTime - ball->getCurrentTime();
+	const SimpleVector2<float> startingBallPosition = ball->getPosition() 
+													+ SimpleVector2<float>(ball->getShapeWidth()/2, ball->getShapeHeight()/2);
+	const SimpleVector2<float> endingBallPosition = 
+		Movement::newPositionFromVelocityAcceleration(startingBallPosition, ball->getVelocity() - pointVel,
+														ball->getAcceleration() - pointAcc, remainingTime);
+
+	const float ballRadius = float(ball->getShapeWidth()) / 2;
+	const float x = Movement::distancePointLine(point, startingBallPosition, endingBallPosition).length();
+
+	if (x > ballRadius) // If ball is not moving towards the point
+		return nullptr;
+
+	const SimpleVector2<float> path = endingBallPosition - startingBallPosition;
+	const SimpleVector2<float> distanceProj = (point - startingBallPosition).projectTo(path);
+
+	const float offset = std::sqrt(ballRadius * ballRadius - x * x);
+
+	const SimpleVector2<float> pathToCol = distanceProj - distanceProj.normalized() * offset;
+
+	const float ratio = pathToCol.dotProduct(path.normalized()) / path.length();
+	std::cout << "ratio: " << ratio << std::endl;
+	if (ratio > 0.f && ratio < 1.f) {
+		const SimpleVector2<float> colNormal = ((startingBallPosition + pathToCol) - point).normalized();
+		Collision* newCollision = new Collision{ ball, NULL, colNormal, NULL };
+		float timeToCollision = frameTime * ratio;
+		float timeRemaining = frameTime - timeToCollision;
+		FramePartition newFP = { timeToCollision, timeRemaining };
+
+		newCollision->fp = newFP;
+
+		return newCollision;
+	}
+
+	return nullptr;
+}
+
 Collision* detectBallLineCollision(const std::shared_ptr<Body>& dynamicBody, const SimpleVector2<float>& otherBodyVelocity, SimpleVector2<float> otherBodyAcceleration,
 							const SimpleVector2<float>& linePointA, const SimpleVector2<float>& linePointB, const float& frameTime) {
 	SimpleVector2<float> ballPosition = dynamicBody->getPosition();
@@ -39,27 +80,26 @@ Collision* detectBallLineCollision(const std::shared_ptr<Body>& dynamicBody, con
 
 	float remainingTime = frameTime - dynamicBody->getCurrentTime();
 
-	SimpleVector2<float> distance = Movement::distancePointLine(ballPosition, linePointA, linePointB);
-	distance = distance - distance.normalized() * ballRadius; // Distance from line to edge of the ball
+	const SimpleVector2<float> distance = Movement::distancePointLine(ballPosition, linePointA, linePointB);
+	const SimpleVector2<float> distanceToEdge = distance - distance.normalized() * ballRadius; // Distance from line to edge of the ball
 	
-	SimpleVector2<float> framePath = Movement::distanceFromVelocityAcceleration(dynamicBody->getVelocity(),	
+	const SimpleVector2<float> framePath = Movement::distanceFromVelocityAcceleration(dynamicBody->getVelocity(),	
 																dynamicBody->getAcceleration(), remainingTime);
 
-	SimpleVector2<float> framePathRelative = framePath - Movement::distanceFromVelocityAcceleration(otherBodyVelocity,
+	const SimpleVector2<float> framePathRelative = framePath - Movement::distanceFromVelocityAcceleration(otherBodyVelocity,
 																						otherBodyAcceleration, remainingTime);
 
 
 	if (!goingTowardsLine(linePointA - distance.normalized() * ballRadius, linePointB - distance.normalized() * ballRadius, ballPosition, framePathRelative))
-		return NULL;
+		return nullptr;
 
-	float pathDotDistance = framePath.dotProduct(distance.normalized());
+	float pathDotDistance = framePath.dotProduct(distanceToEdge.normalized());
 
-	float ratio = distance.length() / pathDotDistance;
-
-	Collision* newCollision = new Collision{ dynamicBody, NULL, distance.normalized(), NULL };
+	float ratio = distanceToEdge.length() / pathDotDistance;
 	
-	std::cout << "ratio: " << ratio << std::endl;
+	//std::cout << "ratio: " << ratio << std::endl;
 	if (ratio > 0.f && ratio < 1.00f) {
+		Collision* newCollision = new Collision{ dynamicBody, NULL, distanceToEdge.normalized(), NULL };
 		float timeToCollision = frameTime * ratio;
 		float timeRemaining = frameTime - timeToCollision;
 		FramePartition newFP = { timeToCollision, timeRemaining };
@@ -68,7 +108,7 @@ Collision* detectBallLineCollision(const std::shared_ptr<Body>& dynamicBody, con
 
 		return newCollision;
 	}
-	else return NULL;
+	else return nullptr;
 		
 }
 
@@ -110,12 +150,110 @@ Collision* detectBallBrickCollision(const std::shared_ptr<Body>& ball, const std
 			theseCollisions.push_back(collision);
 		}
 	}
+
+	if (theseCollisions.empty()) {
+		Collision* collision;
+		for (auto& point : brickCorners) {
+			collision = detectBallPointCollision(ball, brick->getVelocity(), brick->getAcceleration(), point, frameTime);
+			if (collision) {
+				collision->body2 = brick;
+				theseCollisions.push_back(collision);
+			}
+		}
+	}
+
 	if (!theseCollisions.empty()) {
 		return theseCollisions[0]; // C26816: The pointer points to memory allocated on the stack... But I don't think it does, see line 33
 		std::sort(theseCollisions.begin(), theseCollisions.end(), compareCollisionsByPtr);
 	}
 	
-	else return NULL;
+	else return nullptr;
+}
+
+void detectInitialCollisions(CollisionQueue& collisionQRef, const BodiesVector& staticBodies,
+							const BodiesVector& dynamicBodies, const float& frameTime) {
+	for (BodiesVector::const_iterator itD = dynamicBodies.begin(); itD != dynamicBodies.end(); ++itD) {
+		if ((*itD)->getVelocity().length() < (*itD)->getMinSpeed())
+			continue;
+		Collision* collision = nullptr;
+		for (BodiesVector::const_iterator itS = staticBodies.begin(); itS != staticBodies.end(); ++itS) {
+			Collision* newCollision = detectBallBrickCollision(*itD, *itS, frameTime);
+			if (newCollision)
+				if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
+					std::cout << "Collision" << std::endl;
+					collision = newCollision;
+				}
+		}
+
+		for (BodiesVector::const_iterator itS = itD + 1; itS != dynamicBodies.end(); ++itS) {
+			Collision* newCollision = detectBallBrickCollision(*itD, *itS, frameTime);
+			if (newCollision)
+				if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
+					std::cout << "Collision" << std::endl;
+					collision = newCollision;
+				}
+		}
+		if (collision) {
+			std::cout << "Collision" << std::endl;
+			collisionQRef.emplace(*collision);
+		}
+	}
+}
+
+void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<Body>& body1,
+						const std::shared_ptr<Body>& body2, const BodiesVector& staticBodies,
+						const BodiesVector& dynamicBodies, const float& frameTime) {
+	Collision* collision = nullptr;
+
+	for (BodiesVector::const_iterator itS = staticBodies.begin(); itS != staticBodies.end(); ++itS) {
+		if (*itS == body2)
+			continue;
+		Collision* newCollision = detectBallBrickCollision(body1, *itS, frameTime);
+		if (newCollision)
+			if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
+				std::cout << "Collision" << std::endl;
+				collision = newCollision;
+			}
+	}
+
+	for (BodiesVector::const_iterator itD = dynamicBodies.begin() + 1; itD != dynamicBodies.end(); ++itD) {
+		if (*itD == body1 || *itD == body2)
+			continue;
+		Collision* newCollision = detectBallBrickCollision(body1, *itD, frameTime);
+		if (newCollision)
+			if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
+				std::cout << "Collision" << std::endl;
+				collision = newCollision;
+			}
+	}
+
+	if (collision) {
+		std::cout << "Collision" << std::endl;
+		collisionQRef.emplace(*collision);
+		collision = nullptr;
+	}
+
+	if (body2->isDynamic()) {
+		for (BodiesVector::const_iterator itS = staticBodies.begin(); itS != staticBodies.end(); ++itS) {
+			if (*itS == body1)
+				continue;
+			Collision* collision = detectBallBrickCollision(body2, *itS, frameTime);
+			if (collision) {
+				std::cout << "Collision" << std::endl;
+				collisionQRef.emplace(*collision);
+			}
+		}
+
+		for (BodiesVector::const_iterator itD = dynamicBodies.begin() + 1; itD != dynamicBodies.end(); ++itD) {
+			if (*itD == body1 || *itD == body2)
+				continue;
+			Collision* collision = detectBallBrickCollision(body2, *itD, frameTime);
+			if (collision) {
+				std::cout << "Collision" << std::endl;
+				collisionQRef.emplace(*collision);
+			}
+		}
+	}
 }
 
 Collision CollisionManager::solveFirstCollision() {
@@ -131,36 +269,17 @@ Collision CollisionManager::solveFirstCollision() {
 	// Mirror the velocity around the collision vector
 	auto& b1Vel = collision.body1->getVelocity();
 	collision.body1->setVelocity(b1Vel - b1Vel.projectTo(collision.collisionVector) * 2);
+	body1->onCollision(body2);
+	body2->onCollision(body1);
 
 	return collision;
 }
 
-void CollisionManager::detectCollisions(std::vector<std::shared_ptr<Body>>& staticBodies,
-										std::vector<std::shared_ptr<Body>>& dynamicBodies, float frameTime)
+void CollisionManager::detectCollisions(BodiesVector& staticBodies,
+										BodiesVector& dynamicBodies, const float& frameTime)
 {	
-	for (std::vector<std::shared_ptr<Body>>::iterator itD = dynamicBodies.begin(); itD != dynamicBodies.end(); ++itD) {
-		Collision* collision = nullptr;
-			for (std::vector<std::shared_ptr<Body>>::iterator itS = staticBodies.begin(); itS != staticBodies.end(); ++itS) {
-				Collision* newCollision = detectBallBrickCollision(*itD, *itS, frameTime);
-				if (newCollision)
-					if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
-						std::cout << "Collision" << std::endl;
-						collision = newCollision;
-				}
-			}
-			if (collision) {
-				std::cout << "Collision" << std::endl;
-				m_CollisionsQ.emplace(*collision);
-			}
-			for (std::vector<std::shared_ptr<Body>>::iterator itS = dynamicBodies.begin()+1; itS != dynamicBodies.end(); ++itS) {
-				Collision* newCollision = detectBallBrickCollision(*itD, *itS, frameTime);
-				if (newCollision)
-					if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
-						std::cout << "Collision" << std::endl;
-						collision = newCollision;
-					}
-			}
-		}
+	detectInitialCollisions(m_CollisionsQ, staticBodies, dynamicBodies, frameTime);
+	
 
 	while (!m_CollisionsQ.empty()) {
 		Collision collisionSolved = solveFirstCollision();
@@ -168,72 +287,16 @@ void CollisionManager::detectCollisions(std::vector<std::shared_ptr<Body>>& stat
 		auto& body2 = collisionSolved.body2;
 		auto& timeRemaining = collisionSolved.fp.timeRemaining;
 
-		Collision* collision = nullptr;
-
-			for (std::vector<std::shared_ptr<Body>>::iterator itS = staticBodies.begin(); itS != staticBodies.end(); ++itS) {
-				if (*itS == body2)
-					continue;
-				Collision* newCollision = detectBallBrickCollision(body1, *itS, frameTime);
-				if (newCollision)
-					if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
-						std::cout << "Collision" << std::endl;
-						collision = newCollision;
-					}
-			}
-
-			if (collision) {
-				std::cout << "Collision" << std::endl;
-				m_CollisionsQ.emplace(*collision);
-				collision = nullptr;
-			}
-
-			for (std::vector<std::shared_ptr<Body>>::iterator itD = dynamicBodies.begin() + 1; itD != dynamicBodies.end(); ++itD) {
-				if (*itD == body1 || *itD == body2)
-					continue;
-				Collision* newCollision = detectBallBrickCollision(body1, *itD, timeRemaining);
-				if (newCollision)
-					if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
-						std::cout << "Collision" << std::endl;
-						collision = newCollision;
-					}
-			}
-
-			if (collision) {
-				std::cout << "Collision" << std::endl;
-				m_CollisionsQ.emplace(*collision);
-				collision = nullptr;
-			}
-
-			if (body2->isDynamic()) {
-				for (std::vector<std::shared_ptr<Body>>::iterator itS = staticBodies.begin(); itS != staticBodies.end(); ++itS) {
-					if (*itS == body1)
-						continue;
-					Collision* collision = detectBallBrickCollision(body2, *itS, frameTime);
-					if (collision) {
-						std::cout << "Collision" << std::endl;
-						m_CollisionsQ.emplace(*collision);
-					}
-				}
-
-				for (std::vector<std::shared_ptr<Body>>::iterator itD = dynamicBodies.begin() + 1; itD != dynamicBodies.end(); ++itD) {
-					if (*itD == body1 || *itD == body2)
-						continue;
-					Collision* collision = detectBallBrickCollision(body2, *itD, frameTime);
-					if (collision) {
-						std::cout << "Collision" << std::endl;
-						m_CollisionsQ.emplace(*collision);
-					}
-				}
-			}
+		checkAfterCollisions(m_CollisionsQ, body1, body2, staticBodies, dynamicBodies, frameTime);
 	}
 
-	for (std::vector<std::shared_ptr<Body>>::iterator itD = dynamicBodies.begin(); itD != dynamicBodies.end(); ++itD) {
+	for (BodiesVector::iterator itD = dynamicBodies.begin(); itD != dynamicBodies.end(); ++itD) {
 		(*itD)->bodyMove(frameTime - (*itD)->getCurrentTime());
 	}
 }
 
-void CollisionManager::moveWithCollisions(std::vector<std::shared_ptr<Body>>& staticBodies,
-	std::vector<std::shared_ptr<Body>>& dynamicBodies, float frameTime)
+void CollisionManager::moveWithCollisions(BodiesVector& staticBodies,
+	BodiesVector& dynamicBodies, float frameTime)
 {
 	detectCollisions(staticBodies, dynamicBodies, frameTime);
 

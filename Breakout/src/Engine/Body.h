@@ -31,15 +31,17 @@ public:
 	SimpleVector2<float> getAcceleration() { return m_Acceleration; }
 	void setFriction(float fr) { m_Friction = fr; }
 	void setMaxSpeed(float sp) { m_MaxSpeed = sp; }
+	float getMinSpeed() { return m_MinSpeed; }
 	float getCurrentTime() { return m_CurrentTime; }
 	
 	void bodyMove(float time);
 	void bodyUpdate();
 
+	virtual void onCollision(std::shared_ptr<Body> other) {}
+
 protected:
 	virtual void update() {}
 	virtual void render();
-	virtual void onCollision(Body* other) {}
 
 private:
 	Shapes::Shape*	m_Shape;
@@ -50,6 +52,7 @@ private:
 	SimpleVector2<float> m_Acceleration;
 	float m_Friction = 0.01f;
 	float m_MaxSpeed = 1.f;
+	float m_MinSpeed = 1e-5f;
 
 	float m_CurrentTime = 0.f;
 

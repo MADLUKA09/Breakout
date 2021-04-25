@@ -23,6 +23,8 @@ void Body::bodyMove(float time) {
 	float FS = time;
 	auto v = getVelocity();
 	auto a = getAcceleration();
+	if (v.length() < getMinSpeed() && a.length() < getMinSpeed() * getMinSpeed())
+		return;
 
 	// New position after this frame
 	SimpleVector2<float> newPos = Movement::newPositionFromVelocityAcceleration(getPosition(), v, a, FS);

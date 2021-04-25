@@ -4,6 +4,7 @@ PlayerPad::PlayerPad(Shapes::Shape* shape, float x, float y, std::shared_ptr<Bal
 	: Body(shape, x, y, true), m_StartingBall (ball)
 {
 	m_Launched = false;
+	setMaxSpeed(0.1f);
 }
 
 PlayerPad::~PlayerPad() {}
@@ -24,7 +25,7 @@ void PlayerPad::onKeyboardDown(const SDL_Keycode& KC)
 		break;
 	case SDLK_SPACE:
 		if (!m_Launched) {
-			m_StartingBall->releaseWithSpeed(SimpleVector2<float>(0.15f, -0.15f));
+			m_StartingBall->releaseWithSpeed(SimpleVector2<float>(0.12f, 0.12f));
 			m_Launched = true;
 		}
 		break;

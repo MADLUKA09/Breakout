@@ -8,6 +8,7 @@
 class Brick : public Body {
 public:
 	Brick(Shapes::Shape* shape, float x, float y, int level);
+	virtual void onCollision(std::shared_ptr<Body> other) {}
 	~Brick();
 
 

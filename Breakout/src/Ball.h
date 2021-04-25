@@ -15,6 +15,7 @@ public:
 	~Ball();
 
 	void releaseWithSpeed(SimpleVector2<float> speed);
+	virtual void onCollision(std::shared_ptr<Body> other) {}
 
 protected:
 	// From Entity

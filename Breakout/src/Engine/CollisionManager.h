@@ -34,20 +34,23 @@ struct Collision {
 	}
 };
 
+using CollisionQueue = std::priority_queue<Collision, std::vector<Collision>, std::greater<Collision>>;
+using BodiesVector = std::vector<std::shared_ptr<Body>>;
+
 class CollisionManager
 {
 public:
 	CollisionManager();
 	~CollisionManager();
 
-	void detectCollisions(std::vector<std::shared_ptr<Body>>& staticBodies,
-		std::vector<std::shared_ptr<Body>>& dynamicBodies, float frameTime);
+	void detectCollisions(BodiesVector& staticBodies,
+		BodiesVector& dynamicBodies, const float& frameTime);
 
 	void moveWithCollisions(std::vector<std::shared_ptr<Body>>& staticBodies,
 		std::vector<std::shared_ptr<Body>>& dynamicBodies, float frameTime);
 
 private:
-	std::priority_queue<Collision, std::vector<Collision>, std::greater<Collision>> m_CollisionsQ;
+	CollisionQueue m_CollisionsQ;
 
 	Collision solveFirstCollision();
 };
