@@ -8,6 +8,8 @@
 #include "Ball.h"
 #include "PlayerPad.h"
 
+#include "Level.h"
+
 
 
 int main(int argc, char* argv[]) {
@@ -23,14 +25,21 @@ int main(int argc, char* argv[]) {
 	Shapes::Circle* ballShape = new Shapes::Circle(8);
 	Shapes::Rectangle* playerShape = new Shapes::Rectangle(96, 16);
 
+	LEVEL::Level level;
+	if (level.loadLevel("levels/Level1.xml")) {
+		return 0;
+	}
+
+
 	for (int i = 0; i < 8; ++i) {
 		std::shared_ptr<Brick> brick = std::make_shared<Brick>(brickShape, 50.f + 84.f * i, 50.f, 0);
 		brick->applyTexture("BrickCyan");
+		brick->addSound("assets/Sounds/game-ball-tap-2073.wav");
 		gm->addSceneObject(brick);
 	}
 
 
-	std::shared_ptr<Ball> ball = std::make_shared<Ball>(ballShape, 300.1f, 300.f);
+	std::shared_ptr<Ball> ball = std::make_shared<Ball>(ballShape, 316.1f, 300.f);
 	gm->addSceneObject(ball);
 	ball->applyTexture("BallLime");
 

@@ -17,6 +17,10 @@ void GameManager::init(const char* title, int xPos, int yPos, int width, int hei
 			SDL_Log("Renderer created...");
 		}
 
+		if (Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096)) {
+			SDL_Log("Audio init failed...");
+		}
+
 		m_FrameStart		= 0;
 		m_FrameTime			= 0;
 		m_TargetFramerate	= frameRate;
@@ -91,12 +95,35 @@ void GameManager::addSceneObject(std::shared_ptr<Entity> newSceneObject) {
 	m_SceneObjects.push_back(newSceneObject);
 }
 
+void GameManager::destroyInactiveSceneObjects(std::shared_ptr<Entity> object)
+{
+	for (EntityVector::const_iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
+		if (!(*it)->isActive()) {
+			m_SceneObjects.erase(it);
+		}
+	}
+}
+
 void GameManager::addDynamic(std::shared_ptr<Body> body) {
 	m_DynamicBodies.push_back(body);
 }
 
 void GameManager::addStatic(std::shared_ptr<Body> body) {
 	m_StaticBodies.push_back(body);
+}
+
+void GameManager::removeDynamic(std::shared_ptr<Body> body) {
+	for (std::vector<std::shared_ptr<Body>>::const_iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); ++it) {
+		if (*it == body)
+			m_StaticBodies.erase(it);
+	}
+}
+
+void GameManager::removeStatic(std::shared_ptr<Body> body) {
+	for (std::vector<std::shared_ptr<Body>>::const_iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
+		if (*it == body)
+			m_StaticBodies.erase(it);
+	}
 }
 
 void GameManager::startFrame() {

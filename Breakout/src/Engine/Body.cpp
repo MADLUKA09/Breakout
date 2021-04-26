@@ -57,6 +57,13 @@ void Body::bodyUpdate() {
 	m_CurrentTime = 0.f;
 }
 
+void Body::bodyDestroy() {
+	if (this->isDynamic())
+		gm->removeDynamic(std::shared_ptr<Body>(this));
+	else
+		gm->removeStatic(std::shared_ptr<Body>(this));
+}
+
 void Body::render() {
 	static SDL_Renderer* renderer = this->getGameManager()->getRenderer();
 	SDL_RenderCopy(renderer, m_Texture, NULL, &m_DestRect);

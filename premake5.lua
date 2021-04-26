@@ -10,6 +10,7 @@ workspace "Breakout"
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 	IncludeDir = {}
 	IncludeDir["SDL2"] = "Breakout/vendor/SDL2"
+	IncludeDir["SDL2Mixer"] = "Breakout/vendor/SDL2_Mixer"
 
 project "Breakout"
 	location "Breakout"
@@ -31,18 +32,21 @@ project "Breakout"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/tinyxml2",
-		"%{IncludeDir.SDL2}/include"
+		"%{IncludeDir.SDL2}/include",
+		"%{IncludeDir.SDL2Mixer}/include"
 	}
 
 	libdirs
 	{
-		"%{IncludeDir.SDL2}/lib/x64"
+		"%{IncludeDir.SDL2}/lib/x64",
+		"%{IncludeDir.SDL2Mixer}/lib"
 	}
 
 	links
 	{
 		"SDL2",
-		"SDL2main"
+		"SDL2main",
+		"SDL2_mixer"
 	}
 
 	filter "configurations:Debug"

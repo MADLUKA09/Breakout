@@ -1,15 +1,19 @@
 #pragma once
 
 #include "Engine/Body.h"
+#include "Engine/SoundEffect.h"
+#include "Level.h"
 #include <string>
 
 #include "SDL.h"
 
 class Brick : public Body {
 public:
-	Brick(Shapes::Shape* shape, float x, float y, int level);
-	virtual void onCollision(std::shared_ptr<Body> other) {}
+	Brick(Shapes::Shape* shape, float x, float y, LEVEL::BrickType brickType);
 	~Brick();
+
+	virtual void onCollision(std::shared_ptr<Body> other);
+	void addSound(std::string soundName);
 
 
 protected:
@@ -20,5 +24,9 @@ protected:
 	virtual void update();
 
 private:
-	int			m_Level;
+	int			m_HitPoints;
+	int			m_BreakScore;
+
+	SoundEffect m_SoundEffectHit;
+	SoundEffect m_SoundEffectBreak;
 };

@@ -36,6 +36,7 @@ public:
 	
 	void bodyMove(float time);
 	void bodyUpdate();
+	void bodyDestroy();
 
 	virtual void onCollision(std::shared_ptr<Body> other) {}
 

@@ -25,7 +25,7 @@ void PlayerPad::onKeyboardDown(const SDL_Keycode& KC)
 		break;
 	case SDLK_SPACE:
 		if (!m_Launched) {
-			m_StartingBall->releaseWithSpeed(SimpleVector2<float>(0.12f, 0.12f));
+			m_StartingBall->releaseWithSpeed(SimpleVector2<float>(0.12f, -0.12f));
 			m_Launched = true;
 		}
 		break;
@@ -56,7 +56,7 @@ void PlayerPad::update()
 		setVelocity(0.f, 0.f);
 	}
 
-	/*if (!m_Launched) {
+	if (!m_Launched) {
 		static int ballWidth = m_StartingBall->getShapeWidth();
 		static int padWidth = this->getShapeWidth();
 		static int padHeight = this->getShapeHeight();
@@ -64,5 +64,5 @@ void PlayerPad::update()
 		SimpleVector2<float> thisPos = this->getPosition();
 		m_StartingBall->setPosition(thisPos.x + padWidth / 2 - ballWidth / 2,
 			thisPos.y - ballWidth / 2 - 460);
-	}*/
+	}
 }

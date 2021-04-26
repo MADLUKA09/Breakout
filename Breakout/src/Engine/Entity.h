@@ -11,10 +11,12 @@
 #define WINDOWWIDTH gm->getWindowWidth()
 #define WINDOWHEIGHT gm->getWindowHeight()
 
+using SubObjectVector = std::vector<std::shared_ptr<Entity>>;
+
 class Entity {
 public:
 	Entity();
-	Entity(float x, float y);
+	Entity(float x, float y, std::shared_ptr<Entity> parent = nullptr);
 
 	void entityInit();
 	void entityOnKeyboardDown(const SDL_Keycode& KC);
@@ -24,10 +26,13 @@ public:
 
 	bool isActive() { return m_Active; }
 	void setActive(bool b) { m_Active = b; }
+	void addSubObject(std::shared_ptr<Entity> ent);
+	void removeSubobject(std::shared_ptr<Entity> ent);
+	void destroy();
 
 	SimpleVector2<float> getPosition()		{ return m_Position; }
 
-	void setPosition(float x, float y)			{ m_Position.x = x; m_Position.y = y; }
+	void setPosition(float x, float y)		{ m_Position.x = x; m_Position.y = y; }
 	
 	static void setGameManager(GameManager* _gm) { gm = _gm; }
 	static GameManager* getGameManager() { return gm; }
@@ -36,6 +41,7 @@ public:
 protected:
 	virtual void bodyMove() {}
 	virtual void bodyUpdate() {}
+	virtual void bodyDestroy() {}
 
 	virtual void init()				{}
 	virtual void onKeyboardDown(const SDL_Keycode& keyCode)	{}
@@ -50,4 +56,6 @@ private:
 	bool m_Active;
 	SimpleVector2<float> m_Position;
 
+	std::shared_ptr<Entity> m_Parent;
+	SubObjectVector m_SubObjects;
 };

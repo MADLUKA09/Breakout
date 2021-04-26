@@ -35,7 +35,7 @@ Collision* detectBallPointCollision(const std::shared_ptr<Body>& ball, const Sim
 
 	float remainingTime = frameTime - ball->getCurrentTime();
 	const SimpleVector2<float> startingBallPosition = ball->getPosition() 
-													+ SimpleVector2<float>(ball->getShapeWidth()/2, ball->getShapeHeight()/2);
+													+ SimpleVector2<float>(float(ball->getShapeWidth())/2, float(ball->getShapeHeight())/2);
 	const SimpleVector2<float> endingBallPosition = 
 		Movement::newPositionFromVelocityAcceleration(startingBallPosition, ball->getVelocity() - pointVel,
 														ball->getAcceleration() - pointAcc, remainingTime);
@@ -173,10 +173,12 @@ Collision* detectBallBrickCollision(const std::shared_ptr<Body>& ball, const std
 void detectInitialCollisions(CollisionQueue& collisionQRef, const BodiesVector& staticBodies,
 							const BodiesVector& dynamicBodies, const float& frameTime) {
 	for (BodiesVector::const_iterator itD = dynamicBodies.begin(); itD != dynamicBodies.end(); ++itD) {
-		if ((*itD)->getVelocity().length() < (*itD)->getMinSpeed())
+		if ((*itD)->getVelocity().length() < (*itD)->getMinSpeed() ||!(*itD)->isActive())
 			continue;
 		Collision* collision = nullptr;
 		for (BodiesVector::const_iterator itS = staticBodies.begin(); itS != staticBodies.end(); ++itS) {
+			if (!(*itS)->isActive())
+				continue;
 			Collision* newCollision = detectBallBrickCollision(*itD, *itS, frameTime);
 			if (newCollision)
 				if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {

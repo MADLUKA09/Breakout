@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SDL.h"
+#include "SDL_mixer.h"
 
 #include <vector>
 #include <memory>
@@ -10,6 +11,8 @@
 
 class Entity;
 class Body;
+
+using EntityVector = std::vector<std::shared_ptr<Entity>>;
 
 //GameManager singleton, contains everything in the game
 class GameManager
@@ -30,8 +33,12 @@ public:
 
 	bool isRunning() { return m_Running; }
 	void addSceneObject(std::shared_ptr<Entity> newSceneObject);
+	void destroyInactiveSceneObjects(std::shared_ptr<Entity> object);
 	void addDynamic(std::shared_ptr<Body> body);
 	void addStatic(std::shared_ptr<Body> body);
+	void removeDynamic(std::shared_ptr<Body> body);
+	void removeStatic(std::shared_ptr<Body> body);
+	
 
 	SDL_Renderer* getRenderer() { return m_Renderer; }
 
@@ -59,7 +66,7 @@ private:
 	TextureManager* m_textureManager;
 	CollisionManager* m_CollisionManager;
 
-	std::vector<std::shared_ptr<Entity>> m_SceneObjects;
+	EntityVector m_SceneObjects;
 	std::vector<std::shared_ptr<Body>> m_DynamicBodies;
 	std::vector<std::shared_ptr<Body>> m_StaticBodies;
 
