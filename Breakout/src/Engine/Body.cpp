@@ -1,14 +1,9 @@
 #include "Body.h"
 #include "Movement.h"
 
-Body::Body(Shapes::Shape* shape, float x, float y, bool dynamic, std::shared_ptr<Entity> parent)
-	: m_Shape(shape), Entity(x, y, parent), m_Dynamic(dynamic)
+Body::Body(Shapes::Shape* shape, float x, float y, bool dynamic)
+	: m_Shape(shape), Entity(x, y), m_Dynamic(dynamic)
 {
-	if (dynamic)
-		this->getGameManager()->addDynamic(std::shared_ptr<Body>(this));
-	else
-		this->getGameManager()->addStatic(std::shared_ptr<Body>(this));
-
 	m_Texture = NULL;
 	m_DestRect = { int(x), int(y), shape->shapeWidth(), shape->shapeHeight() };
 }

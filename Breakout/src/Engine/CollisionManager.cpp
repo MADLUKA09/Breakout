@@ -277,11 +277,11 @@ Collision CollisionManager::solveFirstCollision() {
 	return collision;
 }
 
-void CollisionManager::detectCollisions(BodiesVector& staticBodies,
-										BodiesVector& dynamicBodies, const float& frameTime)
-{	
+
+
+void CollisionManager::moveWithCollisions(BodiesVector& dynamicBodies, BodiesVector& staticBodies, float frameTime) {
 	detectInitialCollisions(m_CollisionsQ, staticBodies, dynamicBodies, frameTime);
-	
+
 
 	while (!m_CollisionsQ.empty()) {
 		Collision collisionSolved = solveFirstCollision();
@@ -295,11 +295,4 @@ void CollisionManager::detectCollisions(BodiesVector& staticBodies,
 	for (BodiesVector::iterator itD = dynamicBodies.begin(); itD != dynamicBodies.end(); ++itD) {
 		(*itD)->bodyMove(frameTime - (*itD)->getCurrentTime());
 	}
-}
-
-void CollisionManager::moveWithCollisions(BodiesVector& staticBodies,
-	BodiesVector& dynamicBodies, float frameTime)
-{
-	detectCollisions(staticBodies, dynamicBodies, frameTime);
-
 }

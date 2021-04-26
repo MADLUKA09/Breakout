@@ -33,17 +33,12 @@ public:
 	void clean();
 
 	bool isRunning() { return m_Running; }
-	void addSceneObject(std::shared_ptr<Entity> newSceneObject);
+	void addSceneEntity(std::shared_ptr<Entity> newSceneObject);
 	void addSceneBody(std::shared_ptr<Body> newSceneBody);
-	void destroyInactiveSceneObjects();
-	void addDynamic(std::shared_ptr<Body> body);
-	void addStatic(std::shared_ptr<Body> body);
-	void removeDynamic(std::shared_ptr<Body> body);
-	void removeStatic(std::shared_ptr<Body> body);
 	void cleanAllObjects() {
-		m_SceneObjects.clear();
-		m_StaticBodies = BodyVector();
-		m_DynamicBodies = BodyVector();
+		m_SceneEntities.clear();
+		m_DynamicBodies.clear();
+		m_StaticBodies.clear();
 	}
 	
 
@@ -73,11 +68,9 @@ private:
 	TextureManager* m_textureManager;
 	CollisionManager* m_CollisionManager;
 
-	EntityVector m_SceneObjects;
-	BodyVector m_SceneBodies;
+	EntityVector m_SceneEntities;
 	BodyVector m_DynamicBodies;
 	BodyVector m_StaticBodies;
-
 
 	// Frame timing members
 	Uint32	m_FrameStart;

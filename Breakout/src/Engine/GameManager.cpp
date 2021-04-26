@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "Entity.h"
+#include "Body.h"
 
 void GameManager::init(const char* title, int xPos, int yPos, int width, int height, int frameRate) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
@@ -49,12 +50,24 @@ void GameManager::handleEvents() {
 			m_Running = false;
 			break;
 		case SDL_KEYDOWN:
-			for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
+			for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneEntities.begin(); it != m_SceneEntities.end(); ++it) {
+				(*it)->entityOnKeyboardDown(event.key.keysym.sym);
+			}
+			for (std::vector<std::shared_ptr<Body>>::iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
+				(*it)->entityOnKeyboardDown(event.key.keysym.sym);
+			}
+			for (std::vector<std::shared_ptr<Body>>::iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); ++it) {
 				(*it)->entityOnKeyboardDown(event.key.keysym.sym);
 			}
 			break;
 		case SDL_KEYUP:
-			for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
+			for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneEntities.begin(); it != m_SceneEntities.end(); ++it) {
+				(*it)->entityOnKeyboardUp(event.key.keysym.sym);
+			}
+			for (std::vector<std::shared_ptr<Body>>::iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
+				(*it)->entityOnKeyboardUp(event.key.keysym.sym);
+			}
+			for (std::vector<std::shared_ptr<Body>>::iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); ++it) {
 				(*it)->entityOnKeyboardUp(event.key.keysym.sym);
 			}
 			break;
@@ -64,8 +77,14 @@ void GameManager::handleEvents() {
 
 void GameManager::update() {
 
-	m_CollisionManager->detectCollisions(m_StaticBodies, m_DynamicBodies, float(getFrameTime()));
-	for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
+	m_CollisionManager->moveWithCollisions(m_DynamicBodies, m_StaticBodies, float(getFrameTime()));
+	for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneEntities.begin(); it != m_SceneEntities.end(); ++it) {
+		(*it)->entityUpdate();
+	}
+	for (std::vector<std::shared_ptr<Body>>::iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
+		(*it)->entityUpdate();
+	}
+	for (std::vector<std::shared_ptr<Body>>::iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); ++it) {
 		(*it)->entityUpdate();
 	}
 
@@ -77,7 +96,13 @@ void GameManager::render() {
 	SDL_RenderClear(m_Renderer);
 
 	//Add stuff to render
-	for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
+	for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneEntities.begin(); it != m_SceneEntities.end(); ++it) {
+		(*it)->entityRender();
+	}
+	for (std::vector<std::shared_ptr<Body>>::iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
+		(*it)->entityRender();
+	}
+	for (std::vector<std::shared_ptr<Body>>::iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); ++it) {
 		(*it)->entityRender();
 	}
 	
@@ -91,45 +116,15 @@ void GameManager::clean(){
 	SDL_Log("Game cleaned");
 }
 
-void GameManager::addSceneObject(std::shared_ptr<Entity> newSceneObject) {
-	m_SceneObjects.push_back(newSceneObject);
+void GameManager::addSceneEntity(std::shared_ptr<Entity> newSceneObject) {
+	m_SceneEntities.push_back(newSceneObject);
 }
 
 void GameManager::addSceneBody(std::shared_ptr<Body> newSceneBody) {
-	m_SceneBodies.push_back(newSceneBody);
-}
-
-void GameManager::destroyInactiveSceneObjects()
-{
-	for (EntityVector::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
-		(*it)->destroyInactiveSubobjects();
-		if (!(*it)->isActive()) {
-			(*it)->destroy();
-			m_SceneObjects.erase(it);
-		}
-	}
-}
-
-void GameManager::addDynamic(std::shared_ptr<Body> body) {
-	m_DynamicBodies.push_back(body);
-}
-
-void GameManager::addStatic(std::shared_ptr<Body> body) {
-	m_StaticBodies.push_back(body);
-}
-
-void GameManager::removeDynamic(std::shared_ptr<Body> body) {
-	for (BodyVector::iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); ++it) {
-		if (*it == body)
-			m_StaticBodies.erase(it);
-	}
-}
-
-void GameManager::removeStatic(std::shared_ptr<Body> body) {
-	for (BodyVector::iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
-		if (*it == body)
-			m_StaticBodies.erase(it);
-	}
+	if (newSceneBody->isDynamic())
+		m_DynamicBodies.push_back(newSceneBody);
+	else
+		m_StaticBodies.push_back(newSceneBody);
 }
 
 void GameManager::startFrame() {

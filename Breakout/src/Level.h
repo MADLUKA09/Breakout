@@ -7,7 +7,6 @@
 #include "Engine/Entity.h"
 #include "Engine/SoundEffect.h"
 
-#include "Brick.h"
 #include "BrickType.h"
 
 
@@ -21,6 +20,7 @@ public:
 	void entityCollision();
 
 	int getNrOfBricks() { return m_NrOfBricks; }
+	void decrementBricks() { --m_NrOfBricks; }
 
 private:
 	int m_RowCount = 0, m_ColCount = 0;

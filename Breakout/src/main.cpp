@@ -6,6 +6,7 @@
 
 #include "Level.h"
 
+#include "Brick.h"
 #include "Boundary.h"
 #include "Ball.h"
 #include "PlayerPad.h"
@@ -22,15 +23,16 @@ int main(int argc, char* argv[]) {
 	Shapes::Rectangle* boundaryShapeVer = new Shapes::Rectangle(8, WINDOWHEIGHT);
 
 	std::shared_ptr<Level> level = std::make_shared<Level>();
+	gm->addSceneEntity(level);
 	if (level->loadLevel("levels/Level1.xml")) {
 		return 0;
 	}
 
-	gm->addSceneObject(level);
+	Brick::setLvl(level);
 
-	std::shared_ptr<Boundary> boundaryUp = std::make_shared<Boundary>(boundaryShapeHor, 0, 0);
-	std::shared_ptr<Boundary> boundaryLeft = std::make_shared<Boundary>(boundaryShapeVer, 0, 0);
-	std::shared_ptr<Boundary> boundaryRight = std::make_shared<Boundary>(boundaryShapeVer, WINDOWWIDTH - 5, 0);
+	std::shared_ptr<Boundary> boundaryUp = std::make_shared<Boundary>(boundaryShapeHor, 0.f, 0.f);
+	std::shared_ptr<Boundary> boundaryLeft = std::make_shared<Boundary>(boundaryShapeVer, 0.f, 0.f);
+	std::shared_ptr<Boundary> boundaryRight = std::make_shared<Boundary>(boundaryShapeVer, float(WINDOWWIDTH) - 5, 0.f);
 	gm->addTexture("Boundary", "assets/Textures/Boundary.bmp");
 	boundaryUp->applyTexture("Boundary");
 	boundaryLeft->applyTexture("Boundary");
@@ -55,12 +57,20 @@ int main(int argc, char* argv[]) {
 		gm->handleEvents();
 		gm->update();
 		gm->render();
-		gm->destroyInactiveSceneObjects();
 
 		gm->setFrameTime();
 
 		if (level->getNrOfBricks() <= 50) {
 			gm->cleanAllObjects();
+			gm->addSceneEntity(level);
+			if (level->loadLevel("levels/Level2.xml")) {
+				return 0;
+			}
+			gm->addSceneBody(ball);
+			gm->addSceneBody(player);
+			gm->addSceneBody(boundaryUp);
+			gm->addSceneBody(boundaryLeft);
+			gm->addSceneBody(boundaryRight);
 		}
 	}
 	gm->clean();

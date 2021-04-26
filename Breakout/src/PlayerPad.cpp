@@ -4,11 +4,13 @@ PlayerPad::PlayerPad(Shapes::Shape* shape, float x, float y, std::shared_ptr<Bal
 	: Body(shape, x, y, true), m_StartingBall (ball)
 {
 	m_Launched = false;
-	setMaxSpeed(0.1f);
+	setMaxSpeed(0.4f);
 }
 
 void PlayerPad::init()
 {
+	setPosition(48.f, 568.f);
+	m_Launched = false;
 }
 
 void PlayerPad::onKeyboardDown(const SDL_Keycode& KC)
@@ -66,11 +68,12 @@ void PlayerPad::update()
 }
 
 void PlayerPad::onCollision(std::shared_ptr<Body> other) {
+	static std::vector<float> speedUps = { 0.2f, 0.4f, 0.6f, 0.7f, 0.8f };
 	if (other->isDynamic()) {
 		++bounceCount;
-		auto vel = other->getVelocity().length();
+		auto vel = speedUps[bounceCount / 5]; // Speed up every 5 bounces
 		float relativeImpact = ((other->getPosition().x + other->getShapeWidth()/2) - (this->getPosition().x + this->getShapeWidth()/2))/this->getShapeWidth();
 		SimpleVector2<float> direction(relativeImpact, -1.f);
-		other->setVelocity(direction.normalized() * vel);
+		other->setVelocity(direction.normalized() * vel); 
 	}
 }

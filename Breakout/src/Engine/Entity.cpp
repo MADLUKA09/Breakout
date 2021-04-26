@@ -7,17 +7,14 @@ Entity::Entity()
 {
 	m_Position.x = 0;
 	m_Position.y = 0;
-	m_Parent = nullptr;
 
 	m_Active = true;
 }
 
-Entity::Entity(float x, float y, std::shared_ptr<Entity> parent)
+Entity::Entity(float x, float y)
 {
 	m_Position.x = x;
 	m_Position.y = y;
-	m_Parent = parent;
-
 	m_Active = true;
 }
 
@@ -41,8 +38,6 @@ void Entity::entityUpdate()
 		return;
 	this->update();
 	this->bodyUpdate();
-	for (SubObjectVector::const_iterator it = m_SubObjects.begin(); it != m_SubObjects.end(); ++it)
-		(*it)->entityUpdate();
 }
 
 void Entity::entityRender()
@@ -50,32 +45,6 @@ void Entity::entityRender()
 	if (!this->isActive())
 		return;
 	this->render();
-	for (SubObjectVector::const_iterator it = m_SubObjects.begin(); it != m_SubObjects.end(); ++it)
-		(*it)->entityRender();
-}
-
-void Entity::addSubObject(std::shared_ptr<Entity> ent)
-{
-	m_SubObjects.push_back(ent);
-}
-
-void Entity::removeSubobject(std::shared_ptr<Entity> ent) {
-	/*for (EntityVector::const_iterator it = m_SubObjects.begin(); it != m_SubObjects.end(); ++it) {
-		if (*it == ent)
-			m_SubObjects.erase(it);
-	}*/
-}
-
-void Entity::destroyInactiveSubobjects()
-{
-	for (EntityVector::iterator it = m_SubObjects.begin(); it != m_SubObjects.end(); ++it) {
-		(*it)->destroyInactiveSubobjects();
-		if (!(*it)->isActive()) {
-			(*it)->destroy();
-			//it = m_SubObjects.erase(it);    //BRUUUUUUUUUUUUUUUUUUUUUUUUUUH
-			//--it;
-		}
-	}
 }
 
 void Entity::destroy() {

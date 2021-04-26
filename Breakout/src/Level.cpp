@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include "Engine/Shapes.h"
-
+#include "Brick.h"
 
 Level::Level()
 {
@@ -85,7 +85,6 @@ int Level::loadLevel(std::string levelPath)
 }
 
 void Level::generateBricks(const char* bricks) {
-
 	std::stringstream ss;
 	ss.str(bricks);
 
@@ -118,23 +117,23 @@ void Level::generateBricks(const char* bricks) {
 			brickX += brickLength + m_ColSpacing;
 			break;
 		case 'H':
-			brick = std::make_shared<Brick>(brickShape, brickX, brickY, m_BrickMap['H'], std::shared_ptr<Entity>(this));
-			addSubObject(brick);
+			brick = std::make_shared<Brick>(brickShape, brickX, brickY, m_BrickMap['H']);
+			gm->addSceneBody(brick);
 			++m_NrOfBricks;
 			break;
 		case 'M':
-			brick = std::make_shared<Brick>(brickShape, brickX, brickY, m_BrickMap['M'], std::shared_ptr<Entity>(this));
-			addSubObject(brick);
+			brick = std::make_shared<Brick>(brickShape, brickX, brickY, m_BrickMap['M']);
+			gm->addSceneBody(brick);
 			++m_NrOfBricks;
 			break;
 		case 'S':
-			brick = std::make_shared<Brick>(brickShape, brickX, brickY, m_BrickMap['S'], std::shared_ptr<Entity>(this));
-			addSubObject(brick);
+			brick = std::make_shared<Brick>(brickShape, brickX, brickY, m_BrickMap['S']);
+			gm->addSceneBody(brick);
 			++m_NrOfBricks;
 			break;
 		case 'I':
-			brick = std::make_shared<Brick>(brickShape, brickX, brickY, m_BrickMap['I'], std::shared_ptr<Entity>(this));
-			addSubObject(brick);
+			brick = std::make_shared<Brick>(brickShape, brickX, brickY, m_BrickMap['I']);
+			gm->addSceneBody(brick);
 			break;
 		}
 	}

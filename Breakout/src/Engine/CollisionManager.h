@@ -43,11 +43,7 @@ public:
 	CollisionManager();
 	~CollisionManager();
 
-	void detectCollisions(BodiesVector& staticBodies,
-		BodiesVector& dynamicBodies, const float& frameTime);
-
-	void moveWithCollisions(std::vector<std::shared_ptr<Body>>& staticBodies,
-		std::vector<std::shared_ptr<Body>>& dynamicBodies, float frameTime);
+	void moveWithCollisions(BodiesVector& dynamicBodies, BodiesVector& staticBodies,float frameTime);
 
 private:
 	CollisionQueue m_CollisionsQ;
