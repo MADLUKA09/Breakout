@@ -6,10 +6,6 @@ Ball::Ball(Shapes::Shape* shape, float x, float y)
 	setFriction(0.f);
 }
 
-Ball::~Ball()
-{
-}
-
 void Ball::init()
 {
 }

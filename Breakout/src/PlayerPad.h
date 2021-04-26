@@ -10,9 +10,8 @@ class PlayerPad : public Body
 {
 public:
 	PlayerPad(Shapes::Shape* shape, float x, float y, std::shared_ptr<Ball> startingBall);
-	~PlayerPad();
 
-	virtual void onCollision(std::shared_ptr<Body> other) {}
+	virtual void onCollision(std::shared_ptr<Body> other);
 
 protected:
 	// From Entity
@@ -24,5 +23,7 @@ protected:
 private:
 	std::shared_ptr<Ball> m_StartingBall;
 	bool m_Launched;
+
+	int bounceCount = 0;
 };
 

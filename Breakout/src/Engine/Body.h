@@ -7,8 +7,8 @@
 class Body : public Entity
 {
 public:
-	Body(Shapes::Shape*, float x, float y, bool dynamic);
-	~Body();
+	Body(Shapes::Shape*, float x, float y, bool dynamic, std::shared_ptr<Entity> parent = nullptr);
+	~Body() {}
 
 	bool isDynamic() { return m_Dynamic; }
 

@@ -13,6 +13,7 @@ class Entity;
 class Body;
 
 using EntityVector = std::vector<std::shared_ptr<Entity>>;
+using BodyVector = std::vector<std::shared_ptr<Body>>;
 
 //GameManager singleton, contains everything in the game
 class GameManager
@@ -33,11 +34,17 @@ public:
 
 	bool isRunning() { return m_Running; }
 	void addSceneObject(std::shared_ptr<Entity> newSceneObject);
-	void destroyInactiveSceneObjects(std::shared_ptr<Entity> object);
+	void addSceneBody(std::shared_ptr<Body> newSceneBody);
+	void destroyInactiveSceneObjects();
 	void addDynamic(std::shared_ptr<Body> body);
 	void addStatic(std::shared_ptr<Body> body);
 	void removeDynamic(std::shared_ptr<Body> body);
 	void removeStatic(std::shared_ptr<Body> body);
+	void cleanAllObjects() {
+		m_SceneObjects.clear();
+		m_StaticBodies = BodyVector();
+		m_DynamicBodies = BodyVector();
+	}
 	
 
 	SDL_Renderer* getRenderer() { return m_Renderer; }
@@ -67,8 +74,9 @@ private:
 	CollisionManager* m_CollisionManager;
 
 	EntityVector m_SceneObjects;
-	std::vector<std::shared_ptr<Body>> m_DynamicBodies;
-	std::vector<std::shared_ptr<Body>> m_StaticBodies;
+	BodyVector m_SceneBodies;
+	BodyVector m_DynamicBodies;
+	BodyVector m_StaticBodies;
 
 
 	// Frame timing members

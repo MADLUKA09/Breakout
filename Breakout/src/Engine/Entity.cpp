@@ -21,6 +21,8 @@ Entity::Entity(float x, float y, std::shared_ptr<Entity> parent)
 	m_Active = true;
 }
 
+Entity::~Entity() {}
+
 void Entity::entityInit() {}
 
 void Entity::entityOnKeyboardDown(const SDL_Keycode& KC)
@@ -35,6 +37,8 @@ void Entity::entityOnKeyboardUp(const SDL_Keycode& KC)
 
 void Entity::entityUpdate() 
 {
+	if (!this->isActive())
+		return;
 	this->update();
 	this->bodyUpdate();
 	for (SubObjectVector::const_iterator it = m_SubObjects.begin(); it != m_SubObjects.end(); ++it)
@@ -43,6 +47,8 @@ void Entity::entityUpdate()
 
 void Entity::entityRender()
 {
+	if (!this->isActive())
+		return;
 	this->render();
 	for (SubObjectVector::const_iterator it = m_SubObjects.begin(); it != m_SubObjects.end(); ++it)
 		(*it)->entityRender();
@@ -54,14 +60,25 @@ void Entity::addSubObject(std::shared_ptr<Entity> ent)
 }
 
 void Entity::removeSubobject(std::shared_ptr<Entity> ent) {
-	for (EntityVector::const_iterator it = m_SubObjects.begin(); it != m_SubObjects.end(); ++it) {
+	/*for (EntityVector::const_iterator it = m_SubObjects.begin(); it != m_SubObjects.end(); ++it) {
 		if (*it == ent)
 			m_SubObjects.erase(it);
+	}*/
+}
+
+void Entity::destroyInactiveSubobjects()
+{
+	for (EntityVector::iterator it = m_SubObjects.begin(); it != m_SubObjects.end(); ++it) {
+		(*it)->destroyInactiveSubobjects();
+		if (!(*it)->isActive()) {
+			(*it)->destroy();
+			//it = m_SubObjects.erase(it);    //BRUUUUUUUUUUUUUUUUUUUUUUUUUUH
+			//--it;
+		}
 	}
 }
 
 void Entity::destroy() {
 	this->m_Active = false;
-	if (m_Parent != nullptr)
-		m_Parent->removeSubobject(std::shared_ptr<Entity> (this));
+	this->bodyDestroy();
 }

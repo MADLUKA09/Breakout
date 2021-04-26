@@ -2,19 +2,18 @@
 
 #include "Engine/Body.h"
 #include "Engine/SoundEffect.h"
-#include "Level.h"
 #include <string>
-
 #include "SDL.h"
+
+#include "BrickType.h"
 
 class Brick : public Body {
 public:
-	Brick(Shapes::Shape* shape, float x, float y, LEVEL::BrickType brickType);
-	~Brick();
+	Brick(Shapes::Shape* shape, float x, float y, BrickType brickType, std::shared_ptr<Entity> parent = nullptr);
+	~Brick(){}
 
 	virtual void onCollision(std::shared_ptr<Body> other);
 	void addSound(std::string soundName);
-
 
 protected:
 	// From Entity
@@ -24,6 +23,7 @@ protected:
 	virtual void update();
 
 private:
+	bool		m_Breakable;
 	int			m_HitPoints;
 	int			m_BreakScore;
 

@@ -17,17 +17,20 @@ class Entity {
 public:
 	Entity();
 	Entity(float x, float y, std::shared_ptr<Entity> parent = nullptr);
+	~Entity();
 
 	void entityInit();
 	void entityOnKeyboardDown(const SDL_Keycode& KC);
 	void entityOnKeyboardUp(const SDL_Keycode& KC);
 	void entityUpdate();
 	void entityRender();
+	virtual void entityCollision() {}
 
 	bool isActive() { return m_Active; }
 	void setActive(bool b) { m_Active = b; }
 	void addSubObject(std::shared_ptr<Entity> ent);
 	void removeSubobject(std::shared_ptr<Entity> ent);
+	void destroyInactiveSubobjects();
 	void destroy();
 
 	SimpleVector2<float> getPosition()		{ return m_Position; }
@@ -37,10 +40,12 @@ public:
 	static void setGameManager(GameManager* _gm) { gm = _gm; }
 	static GameManager* getGameManager() { return gm; }
 
-
+	std::shared_ptr<Entity> getParent() { return m_Parent; }
+	SubObjectVector m_SubObjects;
 protected:
 	virtual void bodyMove() {}
 	virtual void bodyUpdate() {}
+	virtual void bodyCollision() {}
 	virtual void bodyDestroy() {}
 
 	virtual void init()				{}
@@ -57,5 +62,4 @@ private:
 	SimpleVector2<float> m_Position;
 
 	std::shared_ptr<Entity> m_Parent;
-	SubObjectVector m_SubObjects;
 };

@@ -208,7 +208,7 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 	Collision* collision = nullptr;
 
 	for (BodiesVector::const_iterator itS = staticBodies.begin(); itS != staticBodies.end(); ++itS) {
-		if (*itS == body2)
+		if (!(*itS)->isActive() || *itS == body2)
 			continue;
 		Collision* newCollision = detectBallBrickCollision(body1, *itS, frameTime);
 		if (newCollision)
@@ -219,7 +219,7 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 	}
 
 	for (BodiesVector::const_iterator itD = dynamicBodies.begin() + 1; itD != dynamicBodies.end(); ++itD) {
-		if (*itD == body1 || *itD == body2)
+		if (*itD == body1 || *itD == body2 || !(*itD)->isActive())
 			continue;
 		Collision* newCollision = detectBallBrickCollision(body1, *itD, frameTime);
 		if (newCollision)
@@ -235,9 +235,9 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 		collision = nullptr;
 	}
 
-	if (body2->isDynamic()) {
+	if (body2->isDynamic() && body2->isActive()) {
 		for (BodiesVector::const_iterator itS = staticBodies.begin(); itS != staticBodies.end(); ++itS) {
-			if (*itS == body1)
+			if (!(*itS)->isActive() || *itS == body1)
 				continue;
 			Collision* collision = detectBallBrickCollision(body2, *itS, frameTime);
 			if (collision) {

@@ -1,8 +1,8 @@
 <Level
 RowCount="30"
 ColumnCount="20"
-RowSpacing="3"
-ColumnSpacing="3"
+RowSpacing="1"
+ColumnSpacing="1"
  BackgroundTexture="assets/textures/Board_01.bmp">
 	<BrickTypes>
 		<!-- Soft Brick -->
@@ -34,7 +34,7 @@ ColumnSpacing="3"
 		 Id="I"
 		 Texture="assets/textures/BrickBlack.bmp"
 		 HitPoints="Infinite"
-		 HitSound="assets/Sounds/Hit_04.wav" />
+		 HitSound="assets/Sounds/ImpenetrableHit.wav" />
 	</BrickTypes>
 	<Bricks>
 		H H H H H H H H H H H H H H H H H H H H

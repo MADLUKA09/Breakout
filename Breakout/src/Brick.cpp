@@ -1,7 +1,7 @@
 #include "Brick.h"
 
-Brick::Brick(Shapes::Shape* shape, float x, float y, LEVEL::BrickType bt)
-	: Body(shape, x, y, false)
+Brick::Brick(Shapes::Shape* shape, float x, float y, BrickType bt, std::shared_ptr<Entity> parent)
+	: Body(shape, x, y, false, parent)
 {
 
 	m_HitPoints = bt.hitPoints;
@@ -10,11 +10,11 @@ Brick::Brick(Shapes::Shape* shape, float x, float y, LEVEL::BrickType bt)
 	m_SoundEffectHit = bt.hitSound;
 	m_SoundEffectBreak = bt.breakSound;
 	
+	m_Breakable = bt.breakable;
+	if (!m_Breakable)
+		m_HitPoints = 1;
 }
 
-Brick::~Brick()
-{
-}
 
 void Brick::init()
 {
@@ -32,7 +32,16 @@ void Brick::update()
 }
 
 void Brick::onCollision(std::shared_ptr<Body> other) {
-	m_SoundEffectHit.playSound();
+	if (m_Breakable)
+		--m_HitPoints;
+	if (m_HitPoints <= 0) {
+		setActive(false);
+		m_SoundEffectBreak.playSound();
+	}
+	else m_SoundEffectHit.playSound();
+
+	if (getParent())
+		getParent()->entityCollision();
 }
 
 void Brick::addSound(std::string soundName)

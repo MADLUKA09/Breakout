@@ -95,10 +95,16 @@ void GameManager::addSceneObject(std::shared_ptr<Entity> newSceneObject) {
 	m_SceneObjects.push_back(newSceneObject);
 }
 
-void GameManager::destroyInactiveSceneObjects(std::shared_ptr<Entity> object)
+void GameManager::addSceneBody(std::shared_ptr<Body> newSceneBody) {
+	m_SceneBodies.push_back(newSceneBody);
+}
+
+void GameManager::destroyInactiveSceneObjects()
 {
-	for (EntityVector::const_iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
+	for (EntityVector::iterator it = m_SceneObjects.begin(); it != m_SceneObjects.end(); ++it) {
+		(*it)->destroyInactiveSubobjects();
 		if (!(*it)->isActive()) {
+			(*it)->destroy();
 			m_SceneObjects.erase(it);
 		}
 	}
@@ -113,14 +119,14 @@ void GameManager::addStatic(std::shared_ptr<Body> body) {
 }
 
 void GameManager::removeDynamic(std::shared_ptr<Body> body) {
-	for (std::vector<std::shared_ptr<Body>>::const_iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); ++it) {
+	for (BodyVector::iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); ++it) {
 		if (*it == body)
 			m_StaticBodies.erase(it);
 	}
 }
 
 void GameManager::removeStatic(std::shared_ptr<Body> body) {
-	for (std::vector<std::shared_ptr<Body>>::const_iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
+	for (BodyVector::iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
 		if (*it == body)
 			m_StaticBodies.erase(it);
 	}

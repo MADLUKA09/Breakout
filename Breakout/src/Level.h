@@ -1,46 +1,35 @@
 #pragma once
 
-#include "SDL.h"
-#include "Engine/Entity.h"
-#include "Engine/SoundEffect.h"
-#include "Brick.h"
 #include <unordered_map>
 #include <string>
 
-namespace LEVEL
+#include "SDL.h"
+#include "Engine/Entity.h"
+#include "Engine/SoundEffect.h"
+
+#include "Brick.h"
+#include "BrickType.h"
+
+
+class Level : public Entity
 {
-	enum class BrickTypes {S, M, H, I};
+public:
+	Level();
+	~Level() {}
 
-	struct BrickType {
-		char typeID;
-		bool breakable;
-		
-		std::string texture;
+	int loadLevel(std::string levelPath);
+	void entityCollision();
 
-		int hitPoints;
-		int breakScore;
+	int getNrOfBricks() { return m_NrOfBricks; }
 
-		SoundEffect hitSound;
-		SoundEffect breakSound;
-	};
+private:
+	int m_RowCount = 0, m_ColCount = 0;
+	int m_RowSpacing = 0, m_ColSpacing = 0;
 
-	class Level : public Entity
-	{
-	public:
-		Level();
-		~Level();
+	std::unordered_map<char, BrickType> m_BrickMap;
 
-		int loadLevel(std::string levelPath);
+	SDL_Texture* m_BackgroundTexture = nullptr;
 
-	private:
-		int m_RowCount = 0, m_ColCount = 0;
-		int m_RowSpacing = 0, m_ColSpacing = 0;
-
-		std::unordered_map<char, BrickType> m_BrickMap;
-
-		SDL_Texture* m_BackgroundTexture = nullptr;
-
-		void generateBricks(const char* bricks);
-	};
-
-}
+	void generateBricks(const char* bricks);
+	int m_NrOfBricks = 0;
+};

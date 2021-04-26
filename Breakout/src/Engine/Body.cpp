@@ -1,8 +1,8 @@
 #include "Body.h"
 #include "Movement.h"
 
-Body::Body(Shapes::Shape* shape, float x, float y, bool dynamic)
-	: m_Shape(shape), Entity(x, y), m_Dynamic(dynamic)
+Body::Body(Shapes::Shape* shape, float x, float y, bool dynamic, std::shared_ptr<Entity> parent)
+	: m_Shape(shape), Entity(x, y, parent), m_Dynamic(dynamic)
 {
 	if (dynamic)
 		this->getGameManager()->addDynamic(std::shared_ptr<Body>(this));
@@ -11,10 +11,6 @@ Body::Body(Shapes::Shape* shape, float x, float y, bool dynamic)
 
 	m_Texture = NULL;
 	m_DestRect = { int(x), int(y), shape->shapeWidth(), shape->shapeHeight() };
-}
-
-Body::~Body()
-{
 }
 
 void Body::bodyMove(float time) {
@@ -58,10 +54,10 @@ void Body::bodyUpdate() {
 }
 
 void Body::bodyDestroy() {
-	if (this->isDynamic())
-		gm->removeDynamic(std::shared_ptr<Body>(this));
-	else
-		gm->removeStatic(std::shared_ptr<Body>(this));
+	//if (this->isDynamic())
+	//	gm->removeDynamic(std::shared_ptr<Body>(this));
+	//else
+	//	gm->removeStatic(std::shared_ptr<Body>(this));
 }
 
 void Body::render() {
