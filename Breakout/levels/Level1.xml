@@ -3,7 +3,7 @@ RowCount="30"
 ColumnCount="20"
 RowSpacing="1"
 ColumnSpacing="1"
- BackgroundTexture="assets/textures/Board_01.bmp">
+ BackgroundTexture="assets/textures/Background.bmp">
 	<BrickTypes>
 		<!-- Soft Brick -->
 		<BrickType

@@ -178,6 +178,11 @@ void Level::setPlayerAndBallRef(std::shared_ptr<PlayerPad> pl, std::shared_ptr<B
 	m_HUD->updateLevel(m_Level);
 }
 
+void Level::render() {
+	static SDL_Renderer* renderer =  gm->getRenderer();
+	SDL_RenderCopy(renderer, m_BackgroundTexture, NULL, NULL);
+}
+
 void Level::update() {
 	if (m_BallRef->getPosition().y > m_PlayerRef->getPosition().y) {
 		--m_Lives;

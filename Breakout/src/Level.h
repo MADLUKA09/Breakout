@@ -20,6 +20,7 @@ public:
 	~Level() {}
 
 	void update();
+	void render();
 	void onKeyboardDown(const SDL_Keycode& keyCode);
 
 	int loadLevel(std::string levelPath);
