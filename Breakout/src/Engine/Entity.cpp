@@ -20,7 +20,9 @@ Entity::Entity(float x, float y)
 
 Entity::~Entity() {}
 
-void Entity::entityInit() {}
+void Entity::entityInit() {
+	this->init();
+}
 
 void Entity::entityOnKeyboardDown(const SDL_Keycode& KC)
 {

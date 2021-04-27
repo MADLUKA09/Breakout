@@ -9,6 +9,12 @@
 #include "TextureManager.h"
 #include "CollisionManager.h"
 
+#ifdef BO_DEBUG
+#define DEBUGINFO(text) std::cout<<text<<std::endl;
+#else
+#define DEBUGINFO(text)
+#endif
+
 class Entity;
 class Body;
 
@@ -40,6 +46,8 @@ public:
 		m_DynamicBodies.clear();
 		m_StaticBodies.clear();
 	}
+	void removeInactiveObjects();
+	void removeBodiesByLayer(int layer);
 	
 
 	SDL_Renderer* getRenderer() { return m_Renderer; }

@@ -15,6 +15,8 @@ Brick::Brick(Shapes::Shape* shape, float x, float y, BrickType bt)
 	m_Breakable = bt.breakable;
 	if (!m_Breakable)
 		m_HitPoints = 1;
+
+	setLayer(1);
 }
 
 
@@ -37,9 +39,10 @@ void Brick::onCollision(std::shared_ptr<Body> other) {
 	if (m_Breakable)
 		--m_HitPoints;
 	if (m_HitPoints <= 0) {
-		m_Level->decrementBricks();
 		setActive(false);
 		m_SoundEffectBreak.playSound();
+		m_Level->awardPoints(this->m_BreakScore);
+		m_Level->decrementBricks();
 	}
 	else m_SoundEffectHit.playSound();
 }

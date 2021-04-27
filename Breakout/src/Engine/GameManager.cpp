@@ -50,6 +50,8 @@ void GameManager::handleEvents() {
 			m_Running = false;
 			break;
 		case SDL_KEYDOWN:
+			if (event.key.keysym.sym == SDLK_ESCAPE)
+				m_Running = false;
 			for (std::vector<std::shared_ptr<Entity>>::iterator it = m_SceneEntities.begin(); it != m_SceneEntities.end(); ++it) {
 				(*it)->entityOnKeyboardDown(event.key.keysym.sym);
 			}
@@ -127,6 +129,54 @@ void GameManager::addSceneBody(std::shared_ptr<Body> newSceneBody) {
 		m_StaticBodies.push_back(newSceneBody);
 }
 
+void GameManager::removeInactiveObjects()
+{
+	bool erasedOne = false;
+	for (BodyVector::iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
+		if (erasedOne == true) {
+			--it;
+			erasedOne = false;
+		}
+		if (!(*it)->isActive()) {
+			it = m_StaticBodies.erase(it);
+			if (it == m_StaticBodies.end())
+				break;
+			erasedOne = true;
+		}
+	}
+}
+
+void GameManager::removeBodiesByLayer(int layer)
+{
+	bool erasedOne = false;
+	for (BodyVector::iterator it = m_StaticBodies.begin(); it != m_StaticBodies.end(); ++it) {
+		if (erasedOne == true) {
+			--it;
+			erasedOne = false;
+		}
+		if ((*it)->getLayer() == layer) {
+			it = m_StaticBodies.erase(it);
+			if (it == m_StaticBodies.end())
+				break;
+			erasedOne = true;
+		}
+	}
+
+	erasedOne = false;
+	for (BodyVector::iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); ++it) {
+		if (erasedOne == true) {
+			--it;
+			erasedOne = false;
+		}
+		if ((*it)->getLayer() == layer) {
+			it = m_DynamicBodies.erase(it);
+			if (it == m_DynamicBodies.end())
+				break;
+			erasedOne = true;
+		}
+	}
+}
+
 void GameManager::startFrame() {
 	m_FrameStart = SDL_GetTicks();
 }
@@ -137,5 +187,5 @@ void GameManager::setFrameTime() {
 		SDL_Delay(m_TargetFrameTime - m_FrameTime);
 		m_FrameTime = SDL_GetTicks() - m_FrameStart;
 	}
-	std::cout << "Frame time: " << m_FrameTime << "ms" << std::endl;
+	DEBUGINFO("Frame time: " << m_FrameTime << "ms")
 }

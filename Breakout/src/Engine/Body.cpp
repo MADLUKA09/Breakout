@@ -6,12 +6,17 @@ Body::Body(Shapes::Shape* shape, float x, float y, bool dynamic)
 {
 	m_Texture = NULL;
 	m_DestRect = { int(x), int(y), shape->shapeWidth(), shape->shapeHeight() };
+	m_Layer = 0;
 }
 
-void Body::bodyMove(float time) {
+void Body::bodyMove(float time, bool safe) { // set safe to true to avoid clipping through objects (maybe)
+	static float safetyFactor = 1.f - 1.e-5f;
 	if (!isActive())
 		return;
 	float FS = time;
+	if (safe)
+		FS *= safetyFactor;
+
 	auto v = getVelocity();
 	auto a = getAcceleration();
 	if (v.length() < getMinSpeed() && a.length() < getMinSpeed() * getMinSpeed())

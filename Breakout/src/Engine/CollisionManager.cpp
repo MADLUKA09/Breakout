@@ -54,7 +54,7 @@ Collision* detectBallPointCollision(const std::shared_ptr<Body>& ball, const Sim
 	const SimpleVector2<float> pathToCol = distanceProj - distanceProj.normalized() * offset;
 
 	const float ratio = pathToCol.dotProduct(path.normalized()) / path.length();
-	std::cout << "ratio: " << ratio << std::endl;
+	DEBUGINFO("Paths ratio: " << ratio)
 	if (ratio > 0.f && ratio < 1.f) {
 		const SimpleVector2<float> colNormal = ((startingBallPosition + pathToCol) - point).normalized();
 		Collision* newCollision = new Collision{ ball, NULL, colNormal, NULL };
@@ -97,7 +97,6 @@ Collision* detectBallLineCollision(const std::shared_ptr<Body>& dynamicBody, con
 
 	float ratio = distanceToEdge.length() / pathDotDistance;
 	
-	//std::cout << "ratio: " << ratio << std::endl;
 	if (ratio > 0.f && ratio < 1.00f) {
 		Collision* newCollision = new Collision{ dynamicBody, NULL, distanceToEdge.normalized(), NULL };
 		float timeToCollision = frameTime * ratio;
@@ -182,7 +181,7 @@ void detectInitialCollisions(CollisionQueue& collisionQRef, const BodiesVector& 
 			Collision* newCollision = detectBallBrickCollision(*itD, *itS, frameTime);
 			if (newCollision)
 				if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
-					std::cout << "Collision" << std::endl;
+					DEBUGINFO("Init collision")
 					collision = newCollision;
 				}
 		}
@@ -191,12 +190,12 @@ void detectInitialCollisions(CollisionQueue& collisionQRef, const BodiesVector& 
 			Collision* newCollision = detectBallBrickCollision(*itD, *itS, frameTime);
 			if (newCollision)
 				if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
-					std::cout << "Collision" << std::endl;
+					DEBUGINFO("Init collision")
 					collision = newCollision;
 				}
 		}
 		if (collision) {
-			std::cout << "Collision" << std::endl;
+			DEBUGINFO("Collision sorted")
 			collisionQRef.emplace(*collision);
 		}
 	}
@@ -213,7 +212,7 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 		Collision* newCollision = detectBallBrickCollision(body1, *itS, frameTime);
 		if (newCollision)
 			if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
-				std::cout << "Collision" << std::endl;
+				DEBUGINFO("Subsequent collision")
 				collision = newCollision;
 			}
 	}
@@ -224,13 +223,13 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 		Collision* newCollision = detectBallBrickCollision(body1, *itD, frameTime);
 		if (newCollision)
 			if (collision == nullptr || newCollision->fp.timePassed < collision->fp.timePassed) {
-				std::cout << "Collision" << std::endl;
+				DEBUGINFO("Subsequent collision")
 				collision = newCollision;
 			}
 	}
 
 	if (collision) {
-		std::cout << "Collision" << std::endl;
+		DEBUGINFO("Subsequent collision sorted")
 		collisionQRef.emplace(*collision);
 		collision = nullptr;
 	}
@@ -241,7 +240,7 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 				continue;
 			Collision* collision = detectBallBrickCollision(body2, *itS, frameTime);
 			if (collision) {
-				std::cout << "Collision" << std::endl;
+				DEBUGINFO("Other Subsequent collision")
 				collisionQRef.emplace(*collision);
 			}
 		}
@@ -251,7 +250,7 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 				continue;
 			Collision* collision = detectBallBrickCollision(body2, *itD, frameTime);
 			if (collision) {
-				std::cout << "Collision" << std::endl;
+				DEBUGINFO("Other Subsequent collision")
 				collisionQRef.emplace(*collision);
 			}
 		}
@@ -265,8 +264,8 @@ Collision CollisionManager::solveFirstCollision() {
 	auto& body1 = collision.body1;
 	auto& body2 = collision.body2;
 	// Move bodies to the collision time
-	body1->bodyMove(collision.fp.timePassed - body1->getCurrentTime());
-	body2->bodyMove(collision.fp.timePassed - body2->getCurrentTime());
+	body1->bodyMove(collision.fp.timePassed - body1->getCurrentTime(), true);
+	body2->bodyMove(collision.fp.timePassed - body2->getCurrentTime(), true);
 
 	// Mirror the velocity around the collision vector
 	auto& b1Vel = collision.body1->getVelocity();
@@ -288,11 +287,12 @@ void CollisionManager::moveWithCollisions(BodiesVector& dynamicBodies, BodiesVec
 		auto& body1 = collisionSolved.body1;
 		auto& body2 = collisionSolved.body2;
 		auto& timeRemaining = collisionSolved.fp.timeRemaining;
+		DEBUGINFO("Collision processed")
 
 		checkAfterCollisions(m_CollisionsQ, body1, body2, staticBodies, dynamicBodies, frameTime);
 	}
 
 	for (BodiesVector::iterator itD = dynamicBodies.begin(); itD != dynamicBodies.end(); ++itD) {
-		(*itD)->bodyMove(frameTime - (*itD)->getCurrentTime());
+		(*itD)->bodyMove(frameTime - (*itD)->getCurrentTime(), true);
 	}
 }

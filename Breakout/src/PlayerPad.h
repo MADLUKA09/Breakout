@@ -12,6 +12,8 @@ public:
 	PlayerPad(Shapes::Shape* shape, float x, float y, std::shared_ptr<Ball> startingBall);
 
 	virtual void onCollision(std::shared_ptr<Body> other);
+	int getPoints() { return m_Points; }
+	void addPoints(int points) { m_Points += points; }
 
 protected:
 	// From Entity
@@ -21,9 +23,10 @@ protected:
 	virtual void update();
 
 private:
-	std::shared_ptr<Ball> m_StartingBall;
-	bool m_Launched;
+	int m_Points = 0;
 
 	int bounceCount = 0;
+	std::shared_ptr<Ball> m_StartingBall;
+
 };
 

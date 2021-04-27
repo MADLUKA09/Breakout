@@ -7,6 +7,14 @@
 
 Level::Level()
 {
+	m_NrOfBricks = 0;
+	m_Level = 1;
+	m_Lives = 3;
+	m_RowCount = 0;
+	m_ColCount = 0;
+	m_RowSpacing = 0;
+	m_ColSpacing = 0;
+	m_BackgroundTexture = nullptr;
 }
 
 int Level::loadLevel(std::string levelPath)
@@ -139,6 +147,63 @@ void Level::generateBricks(const char* bricks) {
 	}
 }
 
-void Level::entityCollision() {
+void Level::decrementBricks()
+{
 	--m_NrOfBricks;
+	m_HUD->updateScore();
+	if (m_NrOfBricks == 0)
+		levelUp();
+}
+
+void Level::levelUp() {
+	
+	++m_Level;
+	m_HUD->updateLevel(m_Level);
+	if (m_Level > 3) {
+		m_HUD->setGameWin();
+		m_BallRef->setActive(false);
+		return;
+	}
+	gm->removeBodiesByLayer(1);   // Remove Bricks
+	m_BallRef->setMaxSpeed(m_BallRef->getMaxSpeed() + 0.3f);
+	m_BallRef->entityInit();
+	loadLevel("levels/Level" + std::to_string(m_Level) + ".xml");
+}
+
+void Level::setPlayerAndBallRef(std::shared_ptr<PlayerPad> pl, std::shared_ptr<Ball> ball, std::shared_ptr<HUD> hud) {
+	m_PlayerRef = pl;
+	m_BallRef = ball;
+	m_HUD = hud;
+	m_HUD->updateLives(m_Lives);
+	m_HUD->updateLevel(m_Level);
+}
+
+void Level::update() {
+	if (m_BallRef->getPosition().y > m_PlayerRef->getPosition().y) {
+		--m_Lives;
+		m_HUD->updateLives(m_Lives);
+		gm->removeInactiveObjects();
+		if (m_Lives <= 0) {
+			m_BallRef->setActive(false);
+			m_HUD->setGameOver();
+		}
+		m_BallRef->entityInit();
+	}
+}
+
+void Level::onKeyboardDown(const SDL_Keycode& keyCode){
+	switch (keyCode) {
+	case SDLK_r:						// Reset the ball, in case of bugs
+		m_BallRef->entityInit();
+		break;
+	case SDLK_l:
+		++m_Lives;						// Cheater mode
+		m_PlayerRef->addPoints(-1000);
+		m_HUD->updateLives(m_Lives);
+		m_HUD->updateScore();
+		break;
+	case SDLK_u:
+		levelUp();
+		break;
+	}
 }

@@ -31,12 +31,16 @@ public:
 	SimpleVector2<float> getAcceleration() { return m_Acceleration; }
 	void setFriction(float fr) { m_Friction = fr; }
 	void setMaxSpeed(float sp) { m_MaxSpeed = sp; }
+	float getMaxSpeed() { return m_MaxSpeed; }
 	float getMinSpeed() { return m_MinSpeed; }
 	float getCurrentTime() { return m_CurrentTime; }
 	
-	void bodyMove(float time);
+	void bodyMove(float time, bool safe = false);
 	void bodyUpdate();
 	void bodyDestroy();
+
+	void setLayer(int lyr) { m_Layer = lyr; }
+	int getLayer() { return m_Layer; }
 
 	virtual void onCollision(std::shared_ptr<Body> other) {}
 
@@ -47,6 +51,7 @@ protected:
 private:
 	Shapes::Shape*	m_Shape;
 	bool			m_Dynamic;
+	int				m_Layer;
 
 	// Movement
 	SimpleVector2<float> m_Velocity;

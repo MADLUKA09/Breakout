@@ -8,6 +8,9 @@
 #include "Engine/SoundEffect.h"
 
 #include "BrickType.h"
+#include "PlayerPad.h"
+#include "Ball.h"
+#include "HUD.h"
 
 
 class Level : public Entity
@@ -16,20 +19,33 @@ public:
 	Level();
 	~Level() {}
 
-	int loadLevel(std::string levelPath);
-	void entityCollision();
+	void update();
+	void onKeyboardDown(const SDL_Keycode& keyCode);
 
+	int loadLevel(std::string levelPath);
 	int getNrOfBricks() { return m_NrOfBricks; }
-	void decrementBricks() { --m_NrOfBricks; }
+	void decrementBricks();
+
+	void awardPoints(int points) { m_PlayerRef->addPoints(points); }
+
+	void setPlayerAndBallRef(std::shared_ptr<PlayerPad> pl, std::shared_ptr<Ball> ball, std::shared_ptr<HUD> hud);
 
 private:
-	int m_RowCount = 0, m_ColCount = 0;
-	int m_RowSpacing = 0, m_ColSpacing = 0;
+	int m_RowCount, m_ColCount;
+	int m_RowSpacing, m_ColSpacing;
 
 	std::unordered_map<char, BrickType> m_BrickMap;
 
-	SDL_Texture* m_BackgroundTexture = nullptr;
+	SDL_Texture* m_BackgroundTexture;
 
 	void generateBricks(const char* bricks);
-	int m_NrOfBricks = 0;
+	void levelUp();
+
+	int m_NrOfBricks;
+	int m_Level;
+	int m_Lives;
+
+	std::shared_ptr<PlayerPad>	m_PlayerRef;
+	std::shared_ptr<Ball>		m_BallRef;
+	std::shared_ptr<HUD>		m_HUD;
 };
