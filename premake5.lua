@@ -53,6 +53,12 @@ project "Breakout"
 		"SDL2_ttf"
 	}
 
+	postbuildcommands
+	{
+		"{COPY} %{prj.location}/assets %{cfg.buildtarget.directory}/assets",
+		"{COPY} %{prj.location}/levels %{cfg.buildtarget.directory}/levels"
+	}
+
 	filter "configurations:Debug"
 		defines "BO_DEBUG"
 		symbols "On"
