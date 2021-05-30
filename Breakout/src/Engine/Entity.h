@@ -11,11 +11,43 @@
 #define WINDOWWIDTH gm->getWindowWidth()
 #define WINDOWHEIGHT gm->getWindowHeight()
 
+class IDType {
+private:
+	int IDnumber;
+
+public:
+	IDType() {
+		assignID();
+	}
+
+	int getIDNumber() const { return IDnumber; }
+
+	bool operator==(const IDType& other) const {
+		if (this->IDnumber == other.getIDNumber())
+			return true;
+		else return false;
+	}
+
+private:
+
+	void assignID() {
+		IDnumber = getID();
+	}
+
+	static int getID() {
+		static int idnr = 1;
+		return idnr++;
+	}
+
+};
+
 class Entity {
 public:
 	Entity();
 	Entity(float x, float y);
 	~Entity();
+
+	IDType& getID() const { return m_ID; }
 
 	void entityInit();
 	void entityOnKeyboardDown(const SDL_Keycode& KC);
@@ -50,6 +82,7 @@ protected:
 	static GameManager* gm;
 
 private:
+	IDType m_ID;
 	bool m_Active;
 	SimpleVector2<float> m_Position;
 };
