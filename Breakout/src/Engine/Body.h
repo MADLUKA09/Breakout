@@ -10,16 +10,16 @@ public:
 	Body(Shapes::Shape*, float x, float y, bool dynamic);
 	~Body() {}
 
-	const bool isDynamic() { return m_Dynamic; }
+	bool isDynamic() { return m_Dynamic; }
 
 	// Shape
-	int getShapeWidth() const { return m_Shape->shapeWidth(); }
-	int getShapeHeight() const { return m_Shape->shapeHeight(); }
-	Shapes::Shape_type getShapeType() const { return m_Shape->getType(); };
+	int getShapeWidth() { return m_Shape->shapeWidth(); }
+	int getShapeHeight() { return m_Shape->shapeHeight(); }
+	Shapes::Shape_type getShapeType() { return m_Shape->getType(); };
 
 	// Texturing
-	SDL_Texture* getTexture() const { return m_Texture; }
-	const SDL_Rect& getDestRect() const { return m_DestRect; }
+	SDL_Texture* getTexture() { return m_Texture; }
+	SDL_Rect& getDestRect() { return m_DestRect; }
 	void applyTexture(const std::string& name);
 
 	// Movement
@@ -27,20 +27,20 @@ public:
 	void setAcceleration(float x, float y) { m_Acceleration.x = x; m_Acceleration.y = y; }
 	void setVelocity(SimpleVector2<float> vector) { m_Velocity = vector; }
 	void setAcceleration(SimpleVector2<float> vector) { m_Acceleration = vector;; }
-	SimpleVector2<float> getVelocity() const { return m_Velocity; }
-	SimpleVector2<float> getAcceleration() const { return m_Acceleration; }
+	SimpleVector2<float> getVelocity() { return m_Velocity; }
+	SimpleVector2<float> getAcceleration() { return m_Acceleration; }
 	void setFriction(float fr) { m_Friction = fr; }
 	void setMaxSpeed(float sp) { m_MaxSpeed = sp; }
-	float getMaxSpeed() const { return m_MaxSpeed; }
-	float getMinSpeed() const { return m_MinSpeed; }
-	float getCurrentTime() const { return m_CurrentTime; }
+	float getMaxSpeed() { return m_MaxSpeed; }
+	float getMinSpeed() { return m_MinSpeed; }
+	float getCurrentTime() { return m_CurrentTime; }
 	
 	void bodyMove(float time, bool safe = false);
 	void bodyUpdate();
 	void bodyDestroy();
 
 	void setLayer(int lyr) { m_Layer = lyr; }
-	int getLayer() const { return m_Layer; }
+	int getLayer() { return m_Layer; }
 
 	virtual void onCollision(std::shared_ptr<Body> other) {}
 

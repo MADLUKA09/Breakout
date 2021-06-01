@@ -90,9 +90,8 @@ Collision* detectBallLineCollision(const std::shared_ptr<Body>& dynamicBody, con
 																						otherBodyAcceleration, remainingTime);
 
 
-	if (!goingTowardsLine(linePointA - distance.normalized() * ballRadius, linePointB - distance.normalized() * ballRadius, ballPosition, framePathRelative)) {
-		return detectBallPointCollision(dynamicBody, otherBodyVelocity, otherBodyAcceleration, linePointA, remainingTime);
-	}
+	if (!goingTowardsLine(linePointA - distance.normalized() * ballRadius, linePointB - distance.normalized() * ballRadius, ballPosition, framePathRelative))
+		return nullptr;
 
 	float pathDotDistance = framePath.dotProduct(distanceToEdge.normalized());
 
@@ -108,7 +107,7 @@ Collision* detectBallLineCollision(const std::shared_ptr<Body>& dynamicBody, con
 
 		return newCollision;
 	}
-	else return NULL;
+	else return nullptr;
 		
 }
 
@@ -151,8 +150,19 @@ Collision* detectBallBrickCollision(const std::shared_ptr<Body>& ball, const std
 		}
 	}
 
+	if (theseCollisions.empty()) {
+		Collision* collision;
+		for (auto& point : brickCorners) {
+			collision = detectBallPointCollision(ball, brick->getVelocity(), brick->getAcceleration(), point, frameTime);
+			if (collision) {
+				collision->body2 = brick;
+				theseCollisions.push_back(collision);
+			}
+		}
+	}
+
 	if (!theseCollisions.empty()) {
-		return theseCollisions[0]; // C26816: The pointer points to memory allocated on the stack... nullptr might be the problem
+		return theseCollisions[0]; // C26816: The pointer points to memory allocated on the stack... But I don't think it does, see line 33
 		std::sort(theseCollisions.begin(), theseCollisions.end(), compareCollisionsByPtr);
 	}
 	
@@ -186,7 +196,7 @@ void detectInitialCollisions(CollisionQueue& collisionQRef, const BodiesVector& 
 		}
 		if (collision) {
 			DEBUGINFO("Collision sorted")
-			collisionQRef.insert(*collision);
+			collisionQRef.emplace(*collision);
 		}
 	}
 }
@@ -220,7 +230,7 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 
 	if (collision) {
 		DEBUGINFO("Subsequent collision sorted")
-		collisionQRef.insert(*collision);
+		collisionQRef.emplace(*collision);
 		collision = nullptr;
 	}
 
@@ -231,7 +241,7 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 			Collision* collision = detectBallBrickCollision(body2, *itS, frameTime);
 			if (collision) {
 				DEBUGINFO("Other Subsequent collision")
-				collisionQRef.insert(*collision);
+				collisionQRef.emplace(*collision);
 			}
 		}
 
@@ -241,14 +251,15 @@ void checkAfterCollisions(CollisionQueue& collisionQRef, const std::shared_ptr<B
 			Collision* collision = detectBallBrickCollision(body2, *itD, frameTime);
 			if (collision) {
 				DEBUGINFO("Other Subsequent collision")
-				collisionQRef.insert(*collision);
+				collisionQRef.emplace(*collision);
 			}
 		}
 	}
 }
 
 Collision CollisionManager::solveFirstCollision() {
-	Collision collision = m_CollisionsQ.pop(); // Pop first collision
+	Collision collision = m_CollisionsQ.top(); // Take first collision
+	m_CollisionsQ.pop();					   // Pop it
 
 	auto& body1 = collision.body1;
 	auto& body2 = collision.body2;
@@ -268,8 +279,8 @@ Collision CollisionManager::solveFirstCollision() {
 
 
 void CollisionManager::moveWithCollisions(BodiesVector& dynamicBodies, BodiesVector& staticBodies, float frameTime) {
-	
 	detectInitialCollisions(m_CollisionsQ, staticBodies, dynamicBodies, frameTime);
+
 
 	while (!m_CollisionsQ.empty()) {
 		Collision collisionSolved = solveFirstCollision();
