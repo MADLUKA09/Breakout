@@ -1,5 +1,4 @@
 **/bin/
-!vendor/premake/bin/
 bin-int/
 
 # Visual Studio files and folder

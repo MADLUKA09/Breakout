@@ -56,7 +56,10 @@ project "Breakout"
 	postbuildcommands
 	{
 		"{COPY} %{prj.location}/assets %{cfg.buildtarget.directory}/assets",
-		"{COPY} %{prj.location}/levels %{cfg.buildtarget.directory}/levels"
+		"{COPY} %{prj.location}/levels %{cfg.buildtarget.directory}/levels",
+		"{COPY} %{prj.location}/vendor/SDL2/lib/x64/SDL2.dll %{cfg.buildtarget.directory}",
+		"{COPY} %{prj.location}/vendor/SDL2_Mixer/lib/SDL2_mixer.dll %{cfg.buildtarget.directory}",
+		"{COPY} %{prj.location}/vendor/SDL2_ttf/lib/x64/**.dll %{cfg.buildtarget.directory}"
 	}
 
 	filter "configurations:Debug"
