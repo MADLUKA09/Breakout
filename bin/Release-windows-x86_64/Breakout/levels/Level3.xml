@@ -1,0 +1,52 @@
+<Level
+RowCount="30"
+ColumnCount="20"
+RowSpacing="1"
+ColumnSpacing="1"
+ BackgroundTexture="assets/textures/Background.bmp">
+	<BrickTypes>
+		<!-- Soft Brick -->
+		<BrickType
+		 Id="S"
+		 Texture="assets/textures/BrickCyan.bmp"
+		 HitPoints="1"
+		 HitSound="assets/Sounds/SoftHit.wav"
+		 BreakSound="assets/Sounds/SoftBreak.wav"
+		 BreakScore="50" />
+		<!-- Medium Brick -->
+		<BrickType
+		 Id="M"
+		 Texture="assets/textures/BrickOlive.bmp"
+		 HitPoints="2"
+		 HitSound="assets/Sounds/MediumHit.wav"
+		 BreakSound="assets/Sounds/MediumBreak.wav"
+		 BreakScore="100" />
+		<!-- Hard Brick -->
+		<BrickType
+		 Id="H"
+		 Texture="assets/textures/BrickRed.bmp"
+		 HitPoints="3"
+		 HitSound="assets/Sounds/HardHit.wav"
+		 BreakSound="assets/Sounds/HardBreak.wav"
+		 BreakScore="150" />
+		<!-- Impenetrable Brick -->
+		<BrickType
+		 Id="I"
+		 Texture="assets/textures/BrickBlack.bmp"
+		 HitPoints="Infinite"
+		 HitSound="assets/Sounds/ImpenetrableHit.wav" />
+	</BrickTypes>
+	<Bricks>
+		
+		
+		
+		
+		S S S S S S M M H S S H M M S S S S S S
+		H H H H I I H H H H H H H H I I H H H H
+		
+		
+		M M I I M M M M M M M M M M M M I I M M
+		S I S S S S S S S S S S S S S S S S I S
+		I I S S M M M H H H H H H M M M S S I I
+	</Bricks>
+	</Level>
