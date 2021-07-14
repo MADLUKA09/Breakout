@@ -19,6 +19,7 @@ Additional controls:
 There is a bug which allows the ball to sometimes clip through a wall.
 The physics is severely unoptimized, but it mostly does the job.
 
-The batch file generates the solution and the project, copies necessary libraries and assets to the build folder.
+GenerateProject.bat generates the solution and project files for visual studio
+RunBreakout.bat runs the build of the game. Might need permission from antivirus due to unrecognized publisher.
 
 Thank you for viewing my project.
